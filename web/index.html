@@ -1,0 +1,191 @@
+﻿<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>麻雀成績ダッシュボード</title>
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
+    <header class="app-header">
+      <div class="container">
+        <h1>麻雀成績ダッシュボード</h1>
+        <p class="subtitle">Python 集計 → ローカル Web 可視化</p>
+        <div class="toolbar">
+          <label for="season-select">シーズン:</label>
+          <select id="season-select" aria-label="シーズン切替"></select>
+          <button id="refresh-button" type="button">最新データを再読込</button>
+        </div>
+      </div>
+    </header>
+
+    <main class="container layout-grid">
+      <section id="status-panel" class="card">
+        <h2>概要</h2>
+        <div class="status-grid">
+          <div>
+            <span class="label">ワークブック</span>
+            <span id="workbook-name" class="value">-</span>
+          </div>
+          <div>
+            <span class="label">期間</span>
+            <span id="date-range" class="value">-</span>
+          </div>
+          <div>
+            <span class="label">対局数</span>
+            <span id="total-games" class="value">0</span>
+          </div>
+          <div>
+            <span class="label">参加人数</span>
+            <span id="total-players" class="value">0</span>
+          </div>
+          <div>
+            <span class="label">データ更新</span>
+            <span id="generated-at" class="value">-</span>
+          </div>
+        </div>
+      </section>
+
+      <section id="player-section" class="card">
+        <div class="section-header">
+          <h2>プレイヤー成績</h2>
+          <div class="filter-group">
+            <label for="player-search" class="label">フィルター</label>
+            <input id="player-search" type="search" placeholder="名前で絞り込み" />
+          </div>
+        </div>
+        <div class="table-wrapper">
+          <table id="player-table">
+            <thead>
+              <tr>
+                <th scope="col">順位</th>
+                <th scope="col">名前</th>
+                <th scope="col">対局数</th>
+                <th scope="col">合計</th>
+                <th scope="col">平均</th>
+                <th scope="col">平均着順</th>
+                <th scope="col">トップ率</th>
+                <th scope="col">ラス率</th>
+                <th scope="col">ベスト</th>
+                <th scope="col">ワースト</th>
+                <th scope="col">着順内訳</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </section>
+
+      <aside id="player-detail" class="card detail-card" aria-live="polite">
+        <h2>プレイヤー詳細</h2>
+        <p class="placeholder">プレイヤーを選択すると詳細が表示されます。</p>
+        <div class="detail-content hidden">
+          <header class="detail-header">
+            <h3 id="detail-name">-</h3>
+            <span id="detail-rank" class="detail-rank">-</span>
+          </header>
+          <dl class="detail-metrics">
+            <div>
+              <dt>平均点</dt>
+              <dd id="detail-average">-</dd>
+            </div>
+            <div>
+              <dt>平均着順</dt>
+              <dd id="detail-average-rank">-</dd>
+            </div>
+            <div>
+              <dt>トップ率</dt>
+              <dd id="detail-top-rate">-</dd>
+            </div>
+            <div>
+              <dt>ラス率</dt>
+              <dd id="detail-last-rate">-</dd>
+            </div>
+            <div>
+              <dt>ベスト</dt>
+              <dd id="detail-best">-</dd>
+            </div>
+            <div>
+              <dt>ワースト</dt>
+              <dd id="detail-worst">-</dd>
+            </div>
+            <div>
+              <dt>対局数</dt>
+              <dd id="detail-games">-</dd>
+            </div>
+            <div>
+              <dt>合計</dt>
+              <dd id="detail-total">-</dd>
+            </div>
+          </dl>
+
+          <div class="detail-chart">
+            <h4>着順内訳</h4>
+            <div class="placement-chart" role="img" aria-label="着順内訳">
+              <div class="bar" data-rank="1">
+                <span class="label">1位</span>
+                <div class="bar-track"><div class="bar-fill"></div></div>
+                <span class="value">0</span>
+              </div>
+              <div class="bar" data-rank="2">
+                <span class="label">2位</span>
+                <div class="bar-track"><div class="bar-fill"></div></div>
+                <span class="value">0</span>
+              </div>
+              <div class="bar" data-rank="3">
+                <span class="label">3位</span>
+                <div class="bar-track"><div class="bar-fill"></div></div>
+                <span class="value">0</span>
+              </div>
+              <div class="bar" data-rank="4">
+                <span class="label">4位</span>
+                <div class="bar-track"><div class="bar-fill"></div></div>
+                <span class="value">0</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="detail-history">
+            <h4>直近の対局</h4>
+            <ul id="detail-history" class="detail-history-list"></ul>
+          </div>
+        </div>
+      </aside>
+
+      <section id="history-section" class="card">
+        <div class="section-header">
+          <h2>対局履歴</h2>
+          <div class="filter-group">
+            <label for="history-limit" class="label">最新表示</label>
+            <select id="history-limit">
+              <option value="10">10件</option>
+              <option value="20">20件</option>
+              <option value="9999" selected>すべて</option>
+            </select>
+          </div>
+        </div>
+        <ul id="history-list" class="history-list" aria-live="polite"></ul>
+      </section>
+    </main>
+
+    <template id="history-item-template">
+      <li class="history-item">
+        <header>
+          <span class="game-date"></span>
+          <span class="game-index"></span>
+        </header>
+        <ol class="placement"></ol>
+      </li>
+    </template>
+
+    <template id="detail-history-item-template">
+      <li>
+        <span class="date"></span>
+        <span class="score"></span>
+        <span class="rank"></span>
+      </li>
+    </template>
+
+    <script src="js/main.js" type="module"></script>
+  </body>
+</html>
