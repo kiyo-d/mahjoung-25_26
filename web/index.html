@@ -11,10 +11,22 @@
       <div class="container">
         <h1>麻雀成績ダッシュボード</h1>
         <p class="subtitle">Python 集計 → ローカル Web 可視化</p>
+        <div class="header-meta" role="presentation">
+          <span class="chip">自動集計</span>
+          <span class="chip">詳細分析</span>
+          <span class="chip">履歴追跡</span>
+        </div>
         <div class="toolbar">
-          <label for="season-select">シーズン:</label>
-          <select id="season-select" aria-label="シーズン切替"></select>
-          <button id="refresh-button" type="button">最新データを再読込</button>
+          <div class="toolbar-group">
+            <label for="season-select">シーズン</label>
+            <div class="select-wrapper">
+              <select id="season-select" aria-label="シーズン切替"></select>
+            </div>
+          </div>
+          <button id="refresh-button" type="button">
+            <span class="icon" aria-hidden="true">⟳</span>
+            <span class="button-label">最新データを再読込</span>
+          </button>
         </div>
       </div>
     </header>
@@ -51,7 +63,12 @@
           <h2>プレイヤー成績</h2>
           <div class="filter-group">
             <label for="player-search" class="label">フィルター</label>
-            <input id="player-search" type="search" placeholder="名前で絞り込み" />
+            <input
+              id="player-search"
+              class="search-field"
+              type="search"
+              placeholder="名前で絞り込み"
+            />
           </div>
         </div>
         <div class="table-wrapper">
@@ -157,11 +174,13 @@
           <h2>対局履歴</h2>
           <div class="filter-group">
             <label for="history-limit" class="label">最新表示</label>
-            <select id="history-limit">
-              <option value="10">10件</option>
-              <option value="20">20件</option>
-              <option value="9999" selected>すべて</option>
-            </select>
+            <div class="select-wrapper">
+              <select id="history-limit">
+                <option value="10">10件</option>
+                <option value="20">20件</option>
+                <option value="9999" selected>すべて</option>
+              </select>
+            </div>
           </div>
         </div>
         <ul id="history-list" class="history-list" aria-live="polite"></ul>
