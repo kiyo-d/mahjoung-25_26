@@ -5,6 +5,8 @@ const state = {
   seasons: [],
   selectedIndex: 0,
   selectedPlayer: null,
+  sortKey: "rank",
+  sortDirection: "ascending",
 };
 
 const dom = {
@@ -36,6 +38,21 @@ const dom = {
   detailHistoryList: document.getElementById("detail-history"),
   detailHistoryTemplate: document.getElementById("detail-history-item-template"),
   placementBars: document.querySelectorAll(".placement-chart .bar"),
+  playerTableHeaders: document.querySelectorAll("#player-table thead th[data-sort-key]"),
+  playerTableSortButtons: document.querySelectorAll("#player-table thead button[data-sort-key]"),
+};
+
+const SORT_CONFIG = {
+  rank: { accessor: (player) => Number(player.rank) || 0, type: "number" },
+  name: { accessor: (player) => player.name || "", type: "string" },
+  games_played: { accessor: (player) => Number(player.games_played) || 0, type: "number" },
+  total_score: { accessor: (player) => Number(player.total_score) || 0, type: "number" },
+  average_score: { accessor: (player) => Number(player.average_score) || 0, type: "number" },
+  average_rank: { accessor: (player) => Number(player.average_rank) || 0, type: "number" },
+  top_rate: { accessor: (player) => Number(player.top_rate) || 0, type: "number" },
+  last_rate: { accessor: (player) => Number(player.last_rate) || 0, type: "number" },
+  best_score: { accessor: (player) => Number(player.best_score) || 0, type: "number" },
+  worst_score: { accessor: (player) => Number(player.worst_score) || 0, type: "number" },
 };
 
 function formatNumber(value, digits = 1) {
@@ -96,9 +113,57 @@ function updateTableSelection() {
   });
 }
 
+function updateSortIndicators() {
+  dom.playerTableHeaders.forEach((th) => {
+    const key = th.dataset.sortKey;
+    const button = th.querySelector(".table-sort-button");
+    const indicator = button?.querySelector(".sort-indicator");
+    if (!key || !button || !indicator) {
+      return;
+    }
+
+    const isActive = state.sortKey === key;
+    if (isActive) {
+      th.setAttribute("aria-sort", state.sortDirection);
+      indicator.textContent = state.sortDirection === "ascending" ? "▲" : "▼";
+      button.setAttribute("aria-pressed", "true");
+    } else {
+      th.setAttribute("aria-sort", "none");
+      indicator.textContent = "↕";
+      button.setAttribute("aria-pressed", "false");
+    }
+  });
+}
+
 function renderPlayers(season) {
   const query = dom.playerSearch.value.trim().toLowerCase();
   const rows = season.players.filter((player) => !query || player.name.toLowerCase().includes(query));
+  const sortConfig = SORT_CONFIG[state.sortKey];
+
+  if (sortConfig) {
+    const direction = state.sortDirection === "descending" ? -1 : 1;
+    rows.sort((a, b) => {
+      const valueA = sortConfig.accessor(a);
+      const valueB = sortConfig.accessor(b);
+      let comparison = 0;
+
+      if (sortConfig.type === "string") {
+        comparison = String(valueA).localeCompare(String(valueB), "ja");
+      } else {
+        comparison = Number(valueA) - Number(valueB);
+      }
+
+      if (comparison === 0) {
+        const rankDiff = Number(a.rank) - Number(b.rank);
+        if (rankDiff !== 0) {
+          return rankDiff;
+        }
+        return String(a.name || "").localeCompare(String(b.name || ""), "ja");
+      }
+
+      return comparison * direction;
+    });
+  }
 
   clearChildren(dom.playerTableBody);
 
@@ -110,6 +175,8 @@ function renderPlayers(season) {
     td.classList.add("text-muted");
     tr.appendChild(td);
     dom.playerTableBody.appendChild(tr);
+    updateTableSelection();
+    updateSortIndicators();
     return;
   }
 
@@ -196,6 +263,7 @@ function renderPlayers(season) {
   });
 
   updateTableSelection();
+  updateSortIndicators();
 }
 
 function renderPlacementChart(counts) {
@@ -350,6 +418,7 @@ function render() {
   renderPlayers(season);
   const selectedPlayer = ensureSelectedPlayer(season);
   renderPlayerDetail(selectedPlayer, season);
+  updateTableSelection();
   renderHistory(season);
 }
 
@@ -394,6 +463,32 @@ function setupEventHandlers() {
     if (season) {
       renderHistory(season);
     }
+  });
+
+  dom.playerTableSortButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const sortKey = button.dataset.sortKey;
+      if (!sortKey) {
+        return;
+      }
+
+      if (state.sortKey === sortKey) {
+        state.sortDirection = state.sortDirection === "ascending" ? "descending" : "ascending";
+      } else {
+        state.sortKey = sortKey;
+        state.sortDirection = button.dataset.defaultDirection || "descending";
+      }
+
+      const season = getCurrentSeason();
+      if (!season) {
+        return;
+      }
+
+      renderPlayers(season);
+      const selectedPlayer = ensureSelectedPlayer(season);
+      renderPlayerDetail(selectedPlayer, season);
+      updateTableSelection();
+    });
   });
 }
 
