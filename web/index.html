@@ -58,16 +58,116 @@
           <table id="player-table">
             <thead>
               <tr>
-                <th scope="col">順位</th>
-                <th scope="col">名前</th>
-                <th scope="col">対局数</th>
-                <th scope="col">合計</th>
-                <th scope="col">平均</th>
-                <th scope="col">平均着順</th>
-                <th scope="col">トップ率</th>
-                <th scope="col">ラス率</th>
-                <th scope="col">ベスト</th>
-                <th scope="col">ワースト</th>
+                <th scope="col" data-sort-key="rank" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="rank"
+                    data-default-direction="ascending"
+                  >
+                    順位
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="name" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="name"
+                    data-default-direction="ascending"
+                  >
+                    名前
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="games_played" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="games_played"
+                    data-default-direction="descending"
+                  >
+                    対局数
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="total_score" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="total_score"
+                    data-default-direction="descending"
+                  >
+                    合計
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="average_score" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="average_score"
+                    data-default-direction="descending"
+                  >
+                    平均
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="average_rank" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="average_rank"
+                    data-default-direction="ascending"
+                  >
+                    平均着順
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="top_rate" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="top_rate"
+                    data-default-direction="descending"
+                  >
+                    トップ率
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="last_rate" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="last_rate"
+                    data-default-direction="ascending"
+                  >
+                    ラス率
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="best_score" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="best_score"
+                    data-default-direction="descending"
+                  >
+                    ベスト
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
+                <th scope="col" data-sort-key="worst_score" aria-sort="none">
+                  <button
+                    type="button"
+                    class="table-sort-button"
+                    data-sort-key="worst_score"
+                    data-default-direction="ascending"
+                  >
+                    ワースト
+                    <span class="sort-indicator" aria-hidden="true">↕</span>
+                  </button>
+                </th>
                 <th scope="col">着順内訳</th>
               </tr>
             </thead>
