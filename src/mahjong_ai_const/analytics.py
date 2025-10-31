@@ -223,8 +223,8 @@ def _compute_player_stats(records: pd.DataFrame) -> pd.DataFrame:
     stats["last_rate"] = (stats["rank_4"] / denominator).fillna(0.0)
 
     stats = stats.reset_index().rename(columns={"player": "player"})
-    stats["ordinal_rank"] = stats["average_rank"].rank(method="dense", ascending=True).astype(int)
-    stats = stats.sort_values(["ordinal_rank", "average_rank", "total_score"], ascending=[True, True, False])
+    stats["ordinal_rank"] = stats["total_score"].rank(method="dense", ascending=False).astype(int)
+    stats = stats.sort_values(["total_score", "ordinal_rank", "average_rank"], ascending=[False, False, False])
     return stats.reset_index(drop=True)
 
 

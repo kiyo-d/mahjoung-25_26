@@ -1,91 +1,91 @@
 {
-  "generated_at": "2025-10-28T01:43:20.591055+00:00",
+  "generated_at": "2025-10-31T21:12:22.752416+00:00",
   "source": "data",
   "seasons": [
     {
       "summary": {
         "season": "2025-26",
         "workbook": "理物麻雀_2025_26.xlsx",
-        "total_games": 32,
-        "total_players": 5,
+        "total_games": 47,
+        "total_players": 6,
         "start_date": "2025-10-01",
-        "end_date": "2025-10-17"
+        "end_date": "2025-10-28"
       },
       "players": [
         {
           "rank": 1,
           "name": "きよ",
-          "games_played": 32,
-          "total_score": 810.7,
-          "average_score": 25.334375,
-          "average_rank": 1.90625,
-          "win_rate": 0.46875,
-          "top_rate": 0.6875,
-          "last_rate": 0.0625,
-          "best_score": 91.5,
+          "games_played": 47,
+          "total_score": 1069.4,
+          "average_score": 22.753191489361704,
+          "average_rank": 1.9787234042553192,
+          "win_rate": 0.46808510638297873,
+          "top_rate": 0.6595744680851063,
+          "last_rate": 0.10638297872340426,
+          "best_score": 94.2,
           "worst_score": -75.6,
           "rank_counts": {
-            "first": 15,
-            "second": 7,
-            "third": 8,
-            "fourth": 2
+            "first": 22,
+            "second": 9,
+            "third": 11,
+            "fourth": 5
           }
         },
         {
           "rank": 2,
-          "name": "こたろー",
-          "games_played": 27,
-          "total_score": 0.4000000000000181,
-          "average_score": 0.014814814814815487,
-          "average_rank": 2.4814814814814814,
-          "win_rate": 0.25925925925925924,
-          "top_rate": 0.5185185185185185,
-          "last_rate": 0.25925925925925924,
-          "best_score": 81.9,
-          "worst_score": -68.9,
+          "name": "ひなた",
+          "games_played": 7,
+          "total_score": -73.1,
+          "average_score": -10.442857142857141,
+          "average_rank": 2.857142857142857,
+          "win_rate": 0.14285714285714285,
+          "top_rate": 0.42857142857142855,
+          "last_rate": 0.42857142857142855,
+          "best_score": 90.8,
+          "worst_score": -76.1,
           "rank_counts": {
-            "first": 7,
-            "second": 7,
-            "third": 6,
-            "fourth": 7
+            "first": 1,
+            "second": 2,
+            "third": 1,
+            "fourth": 3
           }
         },
         {
           "rank": 3,
           "name": "やまだ",
-          "games_played": 32,
-          "total_score": -236.9,
-          "average_score": -7.403125,
-          "average_rank": 2.6875,
-          "win_rate": 0.15625,
-          "top_rate": 0.5,
-          "last_rate": 0.34375,
+          "games_played": 46,
+          "total_score": -181.2,
+          "average_score": -3.9391304347826086,
+          "average_rank": 2.5869565217391304,
+          "win_rate": 0.17391304347826086,
+          "top_rate": 0.5217391304347826,
+          "last_rate": 0.2826086956521739,
           "best_score": 126.9,
           "worst_score": -80.75,
           "rank_counts": {
-            "first": 5,
-            "second": 11,
-            "third": 5,
-            "fourth": 11
+            "first": 8,
+            "second": 16,
+            "third": 9,
+            "fourth": 13
           }
         },
         {
           "rank": 4,
-          "name": "よしたに",
-          "games_played": 19,
-          "total_score": -301.1,
-          "average_score": -15.847368421052632,
-          "average_rank": 2.8421052631578947,
-          "win_rate": 0.15789473684210525,
-          "top_rate": 0.3157894736842105,
-          "last_rate": 0.3157894736842105,
-          "best_score": 78.6,
-          "worst_score": -83.5,
+          "name": "こたろー",
+          "games_played": 42,
+          "total_score": -192.39999999999998,
+          "average_score": -4.580952380952381,
+          "average_rank": 2.5952380952380953,
+          "win_rate": 0.21428571428571427,
+          "top_rate": 0.4523809523809524,
+          "last_rate": 0.2619047619047619,
+          "best_score": 88.1,
+          "worst_score": -68.9,
           "rank_counts": {
-            "first": 3,
-            "second": 3,
-            "third": 7,
-            "fourth": 6
+            "first": 9,
+            "second": 10,
+            "third": 12,
+            "fourth": 11
           }
         },
         {
@@ -105,6 +105,25 @@
             "second": 4,
             "third": 6,
             "fourth": 6
+          }
+        },
+        {
+          "rank": 6,
+          "name": "よしたに",
+          "games_played": 28,
+          "total_score": -353.6,
+          "average_score": -12.62857142857143,
+          "average_rank": 2.75,
+          "win_rate": 0.17857142857142858,
+          "top_rate": 0.39285714285714285,
+          "last_rate": 0.32142857142857145,
+          "best_score": 78.6,
+          "worst_score": -83.7,
+          "rank_counts": {
+            "first": 5,
+            "second": 6,
+            "third": 8,
+            "fourth": 9
           }
         }
       ],
@@ -1004,6 +1023,426 @@
           ],
           "winner": "きよ",
           "total_points": 0.0
+        },
+        {
+          "game_index": 32,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 48.6,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 7.9,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -15.5,
+              "rank": 3
+            },
+            {
+              "name": "ひなた",
+              "score": -41.0,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 33,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 83.9,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 4.5,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -27.2,
+              "rank": 3
+            },
+            {
+              "name": "ひなた",
+              "score": -61.2,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 34,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 57.0,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 1.3,
+              "rank": 2
+            },
+            {
+              "name": "ひなた",
+              "score": -19.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -39.3,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 35,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 72.2,
+              "rank": 1
+            },
+            {
+              "name": "ひなた",
+              "score": 17.1,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -31.0,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -58.3,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 1.4210854715202004e-14
+        },
+        {
+          "game_index": 36,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 88.1,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 23.7,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -35.7,
+              "rank": 3
+            },
+            {
+              "name": "ひなた",
+              "score": -76.1,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 37,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "ひなた",
+              "score": 90.8,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": -3.0,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -26.1,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -61.7,
+              "rank": 4
+            }
+          ],
+          "winner": "ひなた",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 38,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 67.3,
+              "rank": 1
+            },
+            {
+              "name": "ひなた",
+              "score": 16.3,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -20.6,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -63.0,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 39,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 62.2,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 9.8,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -25.5,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -46.5,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 40,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 63.6,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 10.8,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -13.9,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -60.5,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 41,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 64.0,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 9.7,
+              "rank": 2
+            },
+            {
+              "name": "よしたに",
+              "score": -19.8,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -53.9,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 42,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 68.1,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 20.5,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -11.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -77.6,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 43,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 83.2,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": -2.7,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -28.9,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -51.6,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 44,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 60.5,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 8.7,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -20.2,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -50.0,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": -1.0
+        },
+        {
+          "game_index": 45,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 94.2,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 8.8,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -19.3,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -83.7,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 46,
+          "date": "2025-10-28",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 49.0,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 4.0,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -16.4,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -39.6,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": -3.0
         }
       ]
     }
