@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>麻雀成績ダッシュボード</title>
+  <link rel="stylesheet" href="css/styles_my.css">
+  <!-- Rechartsの代わりに Chart.js を使用 -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <header class="header">
+    <div class="header-left">
+      <h1>2025-26シーズン</h1>
+      <span class="badge">総局数 / 17局</span>
+      <span class="badge">流局数 / 5局</span>
+    </div>
+    <div class="header-right">
+      <span id="date-range" class="date">-</span>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="chart-section">
+      <h2>スコア推移</h2>
+      <canvas id="scoreChart"></canvas>
+    </section>
+
+    <aside class="players">
+      <div class="player" style="--color:#ff6b6b;">
+        <div class="icon"></div>
+        <div class="info">
+          <div class="name">滝沢 和典</div>
+          <div class="team">KONAMI 麻雀格闘倶楽部</div>
+        </div>
+      </div>
+      <div class="player" style="--color:#f06595;">
+        <div class="icon"></div>
+        <div class="info">
+          <div class="name">勝又 健志</div>
+          <div class="team">EX 風林火山</div>
+        </div>
+      </div>
+      <div class="player" style="--color:#fab005;">
+        <div class="icon"></div>
+        <div class="info">
+          <div class="name">萩原 聖人</div>
+          <div class="team">TEAM 雷電</div>
+        </div>
+      </div>
+      <div class="player" style="--color:#ffd43b;">
+        <div class="icon"></div>
+        <div class="info">
+          <div class="name">多井 隆晴</div>
+          <div class="team">渋谷ABEMAS</div>
+        </div>
+      </div>
+    </aside>
+
+    <section class="recent">
+      <h2>最近の対戦</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>日時 / ルーム</th>
+            <th>プレイヤー</th>
+            <th>持ち点</th>
+            <th>順位</th>
+            <th>スコア</th>
+          </tr>
+        </thead>
+        <tbody id="recentTable"></tbody>
+      </table>
+    </section>
+
+    <section class="stats">
+      <h2>個人成績（直近100戦）</h2>
+      <div class="graphs">
+        <div>
+          <canvas id="pieChart"></canvas>
+          <p class="chart-label">和了タイプ</p>
+        </div>
+        <div>
+          <canvas id="barChart"></canvas>
+          <p class="chart-label">順位分布</p>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    サンプルUI（HTML+CSS+JS版）。データはダミー値です。
+  </footer>
+
+  <script src="js/main_my.js"></script>
+</body>
+</html>
