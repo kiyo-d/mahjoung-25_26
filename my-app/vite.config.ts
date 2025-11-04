@@ -9,6 +9,13 @@ export default defineConfig({
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
+      "@dist": path.resolve(__dirname, "../dist"), 
+
     },
   },
+  server: {
+      fs: {
+        allow: [".."], // ← 一つ上の階層を読み込み許可
+      },
+  }
 })
