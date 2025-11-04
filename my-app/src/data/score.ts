@@ -30,6 +30,10 @@ function fmtMD(date: string): string {
   return `${m}/${d}`;
 }
 
+function roundToTenth(value: number): number {
+  return Math.round(value * 10 + Number.EPSILON) / 10;
+}
+
 /**
  * JSON → { players, timeline } に変換
  * 方針:
@@ -67,26 +71,33 @@ export function buildChartData(payload: SeasonPayload): {
   const perDateCount = new Map<string, number>();
 
   // 5) 対局を時系列に処理し、行を構築
-  const timeline: TimelinePoint[] = season.history.map((g) => {
+  const timeline: TimelinePoint[] = season.history.map((g, index) => {
     // 5-1) 同日通番を更新
     const nth = (perDateCount.get(g.date) ?? 0) + 1;
     perDateCount.set(g.date, nth);
 
     // 5-2) ラベル生成
     const handLabel = `${fmtMD(g.date)}-${nth}戦目`;
+    const gameNumber = index + 1;
 
     // 5-3) まず全員に前回の累積値をコピー（未参加でも線が切れない）
-    const row: TimelinePoint = { hand: handLabel };
+    const row: TimelinePoint = {
+      hand: handLabel,
+      date: g.date,
+      dailyIndex: nth,
+      gameNumber,
+    };
     for (const id of ORDER) {
-      row[id] = cumulative[id];
+      row[id] = roundToTenth(cumulative[id]);
     }
 
     // 5-4) 参加者のスコアを累積加算して上書き
     for (const entry of g.players) {
       const id = NAME_TO_ID[entry.name];
       if (!id) continue;
-      cumulative[id] += entry.score; // 累積更新
-      row[id] = cumulative[id];      // 行へ反映
+      const updated = cumulative[id] + entry.score;
+      cumulative[id] = updated;             // 累積更新（丸めず保持）
+      row[id] = roundToTenth(updated);      // 行へ反映（表示用に丸め）
     }
 
     return row;

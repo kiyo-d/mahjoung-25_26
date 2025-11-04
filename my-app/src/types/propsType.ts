@@ -7,7 +7,12 @@ export type PlayerId =
   | "YOSHITANI"
   | "HINATA";
 
-export type TimelinePoint = { hand: string } & Partial<Record<PlayerId, number>>;
+export type TimelinePoint = {
+  hand: string;
+  date: string;
+  dailyIndex: number;
+  gameNumber: number;
+} & Partial<Record<PlayerId, number>>;
 
 export type Player = {
     id: PlayerId;
