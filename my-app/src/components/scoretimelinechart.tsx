@@ -136,7 +136,26 @@ export function ScoreTimelineChart({ timeline, players }:{
         <div className="text-sm font-medium text-neutral-200">{formattedDate}（{point.hand}）</div>
         <div className="text-xs text-neutral-400">この日 {point.dailyIndex} 戦目</div>
         <div className="mt-2 space-y-1">
-          {payload.map((entry) => {
+          {[...payload]
+            .sort((a, b) => {
+              const valueA =
+                typeof a.value === "number"
+                  ? a.value
+                  : typeof a.value === "string"
+                    ? Number.parseFloat(a.value)
+                    : Number.NEGATIVE_INFINITY;
+              const valueB =
+                typeof b.value === "number"
+                  ? b.value
+                  : typeof b.value === "string"
+                    ? Number.parseFloat(b.value)
+                    : Number.NEGATIVE_INFINITY;
+              if (Number.isNaN(valueA) && Number.isNaN(valueB)) return 0;
+              if (Number.isNaN(valueA)) return 1;
+              if (Number.isNaN(valueB)) return -1;
+              return valueB - valueA;
+            })
+            .map((entry) => {
             const dataKey = entry.dataKey as string;
             const playerId = dataKey as keyof typeof playerMap;
             const player = playerMap[playerId];
@@ -156,7 +175,7 @@ export function ScoreTimelineChart({ timeline, players }:{
                 </span>
               </div>
             );
-          })}
+            })}
         </div>
       </div>
     );
