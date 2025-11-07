@@ -20,6 +20,17 @@ type ChartTooltipProps = TooltipProps<number, string> & {
 const formatScore = (value: number): string =>
   value.toLocaleString("ja-JP", { minimumFractionDigits: 0, maximumFractionDigits: 1 });
 
+const formatDelta = (value: number): string => {
+  const rounded = Math.round(value * 10) / 10;
+  const formatted = Math.abs(rounded).toLocaleString("ja-JP", {
+    minimumFractionDigits: 1,
+    maximumFractionDigits: 1,
+  });
+  if (rounded > 0) return `+${formatted}`;
+  if (rounded < 0) return `-${formatted}`;
+  return `±${formatted}`;
+};
+
 export function ScoreTimelineChart({ timeline, players }:{
   timeline: TimelinePoint[]; players: Player[];
 }) {
@@ -119,11 +130,62 @@ export function ScoreTimelineChart({ timeline, players }:{
     return Array.from(ticks).sort((a, b) => a - b);
   }, [timeline]);
 
+  const derivedStats = useMemo(() => {
+    const scoreHistory: Record<string, number>[] = [];
+    const rankHistory: Record<string, number>[] = [];
+    const gameIndexByNumber = new Map<number, number>();
+
+    const playerOrder = players.map((player) => player.id);
+    const orderIndex = new Map(playerOrder.map((id, index) => [id, index]));
+
+    timeline.forEach((point, index) => {
+      gameIndexByNumber.set(point.gameNumber, index);
+
+      const scores: Record<string, number> = {};
+      for (const id of playerOrder) {
+        const value = point[id];
+        if (typeof value === "number") {
+          scores[id] = value;
+        }
+      }
+      scoreHistory.push(scores);
+
+      const sorted = [...playerOrder].sort((a, b) => {
+        const scoreA = scores[a] ?? Number.NEGATIVE_INFINITY;
+        const scoreB = scores[b] ?? Number.NEGATIVE_INFINITY;
+        if (Math.abs(scoreA - scoreB) < 1e-6) {
+          return (orderIndex.get(a) ?? 0) - (orderIndex.get(b) ?? 0);
+        }
+        return scoreB - scoreA;
+      });
+
+      const ranks: Record<string, number> = {};
+      let currentRank = 1;
+      let lastScore: number | null = null;
+      sorted.forEach((id, sortIndex) => {
+        const score = scores[id] ?? Number.NEGATIVE_INFINITY;
+        if (lastScore !== null && score < (lastScore ?? 0) - 1e-6) {
+          currentRank = sortIndex + 1;
+        }
+        ranks[id] = currentRank;
+        lastScore = score;
+      });
+      rankHistory.push(ranks);
+    });
+
+    return { scoreHistory, rankHistory, gameIndexByNumber };
+  }, [players, timeline]);
+
   const renderTooltip = (tooltipProps: ChartTooltipProps) => {
     const { active, payload } = tooltipProps;
     if (!active || !payload || payload.length === 0) return null;
     const point = payload[0]?.payload as TimelinePoint | undefined;
     if (!point) return null;
+
+     const pointIndex = derivedStats.gameIndexByNumber.get(point.gameNumber) ?? -1;
+     const previousScores = pointIndex > 0 ? derivedStats.scoreHistory[pointIndex - 1] : undefined;
+     const previousRanks = pointIndex > 0 ? derivedStats.rankHistory[pointIndex - 1] : undefined;
+     const currentRanks = pointIndex >= 0 ? derivedStats.rankHistory[pointIndex] : undefined;
 
     const eventDate = new Date(point.date);
     const formattedDate = Number.isNaN(eventDate.getTime())
@@ -159,8 +221,42 @@ export function ScoreTimelineChart({ timeline, players }:{
             const dataKey = entry.dataKey as string;
             const playerId = dataKey as keyof typeof playerMap;
             const player = playerMap[playerId];
+            const rawValue =
+              typeof entry.value === "number"
+                ? entry.value
+                : typeof entry.value === "string"
+                  ? Number.parseFloat(entry.value)
+                  : Number.NaN;
+            const previousValue = previousScores?.[dataKey];
+            const scoreDelta =
+              Number.isFinite(rawValue) && typeof previousValue === "number"
+                ? rawValue - previousValue
+                : undefined;
+            const hasPreviousValue = typeof previousValue === "number";
+            const hasSignificantDelta =
+              typeof scoreDelta === "number" && Math.abs(scoreDelta) > 1e-6;
+            const shouldShowDeltaRow = hasSignificantDelta || !hasPreviousValue;
+            const rankNow = currentRanks?.[dataKey];
+            const rankPrev = previousRanks?.[dataKey];
+            const rankDiff =
+              typeof rankNow === "number" && typeof rankPrev === "number"
+                ? rankPrev - rankNow
+                : 0;
+
+            const scoreChangeClass = hasSignificantDelta
+              ? scoreDelta! > 0
+                ? "text-emerald-400"
+                : "text-rose-400"
+              : "text-neutral-500";
+
+            const rankChangeClass =
+              rankDiff !== 0
+                ? rankDiff > 0
+                  ? "text-emerald-400"
+                  : "text-rose-400"
+                : "text-neutral-500";
             return (
-              <div key={dataKey} className="flex items-center justify-between gap-3 text-sm">
+              <div key={dataKey} className="flex items-start justify-between gap-3 text-sm">
                 <span className="flex items-center gap-2 text-neutral-300">
                   <span
                     className="h-2.5 w-2.5 rounded-full"
@@ -168,10 +264,24 @@ export function ScoreTimelineChart({ timeline, players }:{
                   />
                   <span>{player?.name ?? dataKey}</span>
                 </span>
-                <span className="font-medium text-neutral-100 tabular-nums">
-                  {typeof entry.value === "number"
-                    ? formatScore(entry.value)
-                    : "-"}
+                <span className="flex flex-col items-end gap-0.5 text-right">
+                  <span className="font-medium text-neutral-100 tabular-nums">
+                    {typeof entry.value === "number"
+                      ? formatScore(entry.value)
+                      : "-"}
+                  </span>
+                  {shouldShowDeltaRow ? (
+                    <span className={`flex items-center gap-1 text-xs ${scoreChangeClass}`}>
+                      {hasSignificantDelta ? (scoreDelta! > 0 ? "↑" : "↓") : null}
+                      <span>{hasSignificantDelta ? formatDelta(scoreDelta!) : "前戦なし"}</span>
+                    </span>
+                  ) : null}
+                  {rankDiff !== 0 && typeof rankNow === "number" ? (
+                    <span className={`flex items-center gap-1 text-xs ${rankChangeClass}`}>
+                      {rankDiff > 0 ? "↑" : "↓"}
+                      {`${Math.abs(rankDiff)} rank`}
+                    </span>
+                  ) : null}
                 </span>
               </div>
             );
