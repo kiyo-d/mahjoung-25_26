@@ -1,14 +1,14 @@
-import type { RecentMatch, SeasonPayload } from "@/types/propsType";
+import type { MatchRecord, SeasonPayload } from "@/types/propsType";
 
 const BASE_SCORE = 30000;
-const RANK_BONUS: Record<RecentMatch["rank"], number> = {
+const RANK_BONUS: Record<MatchRecord["rank"], number> = {
   1: 50,
   2: 10,
   3: -10,
   4: -30,
 };
 
-function isValidRank(rank: number | undefined): rank is RecentMatch["rank"] {
+function isValidRank(rank: number | undefined): rank is MatchRecord["rank"] {
   return rank === 1 || rank === 2 || rank === 3 || rank === 4;
 }
 
@@ -24,7 +24,7 @@ function roundToTenth(value: number): number {
   return Math.round(value * 10) / 10;
 }
 
-function deriveRawScore(score: number | undefined, rank: RecentMatch["rank"]): number | null {
+function deriveRawScore(score: number | undefined, rank: MatchRecord["rank"]): number | null {
   if (typeof score !== "number" || Number.isNaN(score)) {
     return null;
   }
@@ -39,7 +39,7 @@ function deriveRawScore(score: number | undefined, rank: RecentMatch["rank"]): n
   return Math.round(raw);
 }
 
-function derivePoints(rawScore: number | null, rank: RecentMatch["rank"], fallback?: number): number {
+function derivePoints(rawScore: number | null, rank: MatchRecord["rank"], fallback?: number): number {
   if (rawScore === null) {
     return typeof fallback === "number" && !Number.isNaN(fallback) ? roundToTenth(fallback) : 0;
   }
@@ -58,7 +58,7 @@ function buildRoomLabel(gameNumber: number, date: string, dailyIndex: number): s
   return `${prefix} (${dateLabel}-${dailyIndex}戦目)`;
 }
 
-export function buildRecentMatches(payload: SeasonPayload, limit = 12): RecentMatch[] {
+export function buildMatchHistory(payload: SeasonPayload): MatchRecord[] {
   const season = payload.seasons?.[0];
   if (!season || !Array.isArray(season.history)) {
     return [];
@@ -99,7 +99,7 @@ export function buildRecentMatches(payload: SeasonPayload, limit = 12): RecentMa
           score: rawScore ?? Math.round((player.score ?? 0) * 1000),
           nameplate: player.name ?? "不明",
           points,
-        } satisfies RecentMatch;
+        } satisfies MatchRecord;
       })
       .sort((a, b) => {
         if (b.points !== a.points) return b.points - a.points;
@@ -110,14 +110,10 @@ export function buildRecentMatches(payload: SeasonPayload, limit = 12): RecentMa
     return participants;
   });
 
-  const flattened: RecentMatch[] = [];
+  const flattened: MatchRecord[] = [];
   for (let i = games.length - 1; i >= 0; i -= 1) {
     flattened.push(...games[i]);
   }
 
-  if (limit <= 0) {
-    return flattened;
-  }
-
-  return flattened.slice(0, limit);
+  return flattened;
 }
