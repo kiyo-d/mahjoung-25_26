@@ -1,3 +1,5 @@
+import { useEffect, useMemo, useState } from "react";
+
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Table,
@@ -45,6 +47,52 @@ type RecentMatchTableProps = {
 };
 
 export function RecentMatchTable({ matches, title = "直近対局" }: RecentMatchTableProps) {
+  const [selectedDate, setSelectedDate] = useState<string>("all");
+  const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
+
+  const dateOptions = useMemo(() => {
+    const uniqueDates = new Set<string>();
+    matches.forEach((match) => {
+      if (match.date) {
+        uniqueDates.add(match.date);
+      }
+    });
+    return Array.from(uniqueDates).sort((a, b) => {
+      if (a === b) return 0;
+      return a > b ? -1 : 1;
+    });
+  }, [matches]);
+
+  const playerOptions = useMemo(() => {
+    const uniquePlayers = new Set<string>();
+    matches.forEach((match) => {
+      if (match.nameplate) {
+        uniquePlayers.add(match.nameplate);
+      }
+    });
+    return Array.from(uniquePlayers).sort((a, b) => a.localeCompare(b, "ja"));
+  }, [matches]);
+
+  useEffect(() => {
+    if (selectedDate !== "all" && !dateOptions.includes(selectedDate)) {
+      setSelectedDate("all");
+    }
+  }, [dateOptions, selectedDate]);
+
+  useEffect(() => {
+    if (selectedPlayer !== "all" && !playerOptions.includes(selectedPlayer)) {
+      setSelectedPlayer("all");
+    }
+  }, [playerOptions, selectedPlayer]);
+
+  const filteredMatches = useMemo(() => {
+    return matches.filter((match) => {
+      const dateMatch = selectedDate === "all" || match.date === selectedDate;
+      const playerMatch = selectedPlayer === "all" || match.nameplate === selectedPlayer;
+      return dateMatch && playerMatch;
+    });
+  }, [matches, selectedDate, selectedPlayer]);
+
   return (
     <Card className="border-neutral-800 bg-neutral-900/80 text-neutral-100">
       <CardHeader className="pb-4">
@@ -54,12 +102,46 @@ export function RecentMatchTable({ matches, title = "直近対局" }: RecentMatc
             <p className="mt-1 text-xs text-neutral-500">最近の卓結果をスコア順に一覧表示</p>
           </div>
           <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
-            {matches.length} 件
+            {filteredMatches.length} 件
           </span>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            日付で絞り込み
+            <select
+              className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-emerald-500 focus:outline-none"
+              value={selectedDate}
+              onChange={(event) => setSelectedDate(event.target.value)}
+              disabled={dateOptions.length === 0}
+            >
+              <option value="all">すべての日付</option>
+              {dateOptions.map((date) => (
+                <option key={date} value={date}>
+                  {formatDate(date)}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="flex flex-col gap-1 text-xs text-neutral-400">
+            プレイヤーで絞り込み
+            <select
+              className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-emerald-500 focus:outline-none"
+              value={selectedPlayer}
+              onChange={(event) => setSelectedPlayer(event.target.value)}
+              disabled={playerOptions.length === 0}
+            >
+              <option value="all">すべてのプレイヤー</option>
+              {playerOptions.map((player) => (
+                <option key={player} value={player}>
+                  {player}
+                </option>
+              ))}
+            </select>
+          </label>
         </div>
       </CardHeader>
       <CardContent className="pt-0">
-        {matches.length === 0 ? (
+        {filteredMatches.length === 0 ? (
           <div className="rounded-lg border border-dashed border-neutral-800 px-6 py-12 text-center text-sm text-neutral-500">
             まだ対局データがありません。
           </div>
@@ -77,7 +159,7 @@ export function RecentMatchTable({ matches, title = "直近対局" }: RecentMatc
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {matches.map((match) => (
+                {filteredMatches.map((match) => (
                   <TableRow key={`${match.date}-${match.room}-${match.nameplate}`}>
                     <TableCell className="text-sm text-neutral-300">{formatDate(match.date)}</TableCell>
                     <TableCell className="text-sm text-neutral-400">{match.room}</TableCell>
