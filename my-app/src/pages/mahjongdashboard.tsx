@@ -1,7 +1,7 @@
 import { HeaderBar } from "@/components/header";
-import { RecentMatchTable } from "@/components/recentmatchtable";
+import { MatchHistoryTable } from "@/components/matchhistorytable";
 import { ScoreTimelineChart } from "@/components/scoretimelinechart";
-import { buildRecentMatches } from "@/data/recent-matches";
+import { buildMatchHistory } from "@/data/match-history";
 import { buildChartData } from "@/data/score";
 import type { SeasonPayload } from "@/types/propsType";
 
@@ -36,7 +36,7 @@ const headerProps = {
 };
 
 const { players, timeline } = buildChartData(payload);
-const recentMatches = buildRecentMatches(payload, 12);
+const matchHistory = buildMatchHistory(payload);
 
 export default function MahjongDashboard() {
   return (
@@ -44,7 +44,7 @@ export default function MahjongDashboard() {
       <HeaderBar {...headerProps} />
       <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
         <ScoreTimelineChart players={players} timeline={timeline} />
-        <RecentMatchTable matches={recentMatches} />
+        <MatchHistoryTable matches={matchHistory} />
       </div>
       <footer className="max-w-none mx-auto px-6 pb-8 text-xs text-neutral-500">
         サンプルUI。データはダミー値。Excel/CSV → JSON連携を想定。

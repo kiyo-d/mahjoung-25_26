@@ -21,7 +21,7 @@ export type Player = {
     color: string;
   };
 
-export type RecentMatch = {
+export type MatchRecord = {
     date: string;
     room: string;
     rank: 1 | 2 | 3 | 4;

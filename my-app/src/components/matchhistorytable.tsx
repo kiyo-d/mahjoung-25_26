@@ -10,16 +10,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { cn } from "@/lib/utils";
-import type { RecentMatch } from "@/types/propsType";
+import type { MatchRecord } from "@/types/propsType";
 
-const rankLabel: Record<RecentMatch["rank"], string> = {
+const rankLabel: Record<MatchRecord["rank"], string> = {
   1: "1位",
   2: "2位",
   3: "3位",
   4: "4位",
 };
 
-const rankChipClass: Record<RecentMatch["rank"], string> = {
+const rankChipClass: Record<MatchRecord["rank"], string> = {
   1: "border-emerald-500/50 bg-emerald-500/10 text-emerald-200",
   2: "border-sky-500/50 bg-sky-500/10 text-sky-200",
   3: "border-amber-500/50 bg-amber-500/10 text-amber-200",
@@ -41,12 +41,12 @@ const formatPoints = (value: number) => {
   return `${value > 0 ? "+" : "-"}${formatted}`;
 };
 
-type RecentMatchTableProps = {
-  matches: RecentMatch[];
+type MatchHistoryTableProps = {
+  matches: MatchRecord[];
   title?: string;
 };
 
-export function RecentMatchTable({ matches, title = "直近対局" }: RecentMatchTableProps) {
+export function MatchHistoryTable({ matches, title = "対局履歴" }: MatchHistoryTableProps) {
   const [selectedDate, setSelectedDate] = useState<string>("all");
   const [selectedPlayer, setSelectedPlayer] = useState<string>("all");
 
@@ -99,7 +99,7 @@ export function RecentMatchTable({ matches, title = "直近対局" }: RecentMatc
         <div className="flex items-baseline justify-between gap-4">
           <div>
             <CardTitle className="text-lg font-semibold text-neutral-50">{title}</CardTitle>
-            <p className="mt-1 text-xs text-neutral-500">最近の卓結果をスコア順に一覧表示</p>
+            <p className="mt-1 text-xs text-neutral-500">対局結果をスコア順に一覧表示</p>
           </div>
           <span className="rounded-md border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs text-emerald-200">
             {filteredMatches.length} 件
