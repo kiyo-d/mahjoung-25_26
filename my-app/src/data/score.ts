@@ -96,9 +96,8 @@ export function buildChartData(payload: SeasonPayload): {
       const id = NAME_TO_ID[entry.name];
       if (!id) continue;
       const updated = cumulative[id] + entry.score;
-      const rounded = roundToTenth(updated);
-      cumulative[id] = rounded;      // 累積更新
-      row[id] = rounded;             // 行へ反映
+      cumulative[id] = updated;                 // 累積更新（端数は保持）
+      row[id] = roundToTenth(updated);          // 表示のみを丸める
     }
 
     return row;
