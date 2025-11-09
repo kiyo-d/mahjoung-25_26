@@ -54,6 +54,17 @@ const finishBadgeStyles: Record<number, string> = {
   4: "border-rose-400/40 bg-rose-400/15 text-rose-200",
 };
 
+const lightenColor = (hex: string, amount: number) => {
+  const normalized = hex.replace("#", "");
+  const bigint = Number.parseInt(normalized, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  const clampAmount = Math.min(Math.max(amount, 0), 1);
+  const mix = (channel: number) => Math.round(channel + (255 - channel) * clampAmount);
+  return `rgb(${mix(r)}, ${mix(g)}, ${mix(b)})`;
+};
+
 type RankChartDatum = {
   gameNumber: number;
   date: string;
@@ -138,9 +149,40 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
   const heroBackground = useMemo(() => {
     if (!selected) return undefined;
     return {
-      background: `radial-gradient(circle at top left, ${withAlpha(selected.color, 0.45)} 0%, ${withAlpha(selected.color, 0.16)} 38%, rgba(24, 24, 27, 0.94) 90%)`,
+      background: `linear-gradient(140deg, ${withAlpha(selected.color, 0.32)} 0%, ${withAlpha(selected.color, 0.16)} 42%, rgba(18, 18, 23, 0.94) 88%)`,
+      borderColor: withAlpha(selected.color, 0.28),
+      boxShadow: `inset 0 1px 0 ${withAlpha("#ffffff", 0.05)}, 0 28px 65px -48px ${withAlpha(selected.color, 0.8)}`,
     };
   }, [selected]);
+
+  const heroOrbStyle = useMemo(() => {
+    if (!selected) return undefined;
+    return {
+      background: `radial-gradient(circle, ${withAlpha(selected.color, 0.45)} 0%, ${withAlpha(selected.color, 0.05)} 68%)`,
+    };
+  }, [selected]);
+
+  const totalScoreStyles = useMemo(() => {
+    if (!selected) return undefined;
+    return {
+      background: `linear-gradient(135deg, ${withAlpha(selected.color, 0.32)} 0%, rgba(16, 16, 19, 0.92) 65%)`,
+      borderColor: withAlpha(selected.color, 0.36),
+      boxShadow: `inset 0 1px 0 ${withAlpha("#ffffff", 0.08)}, 0 12px 36px -24px ${withAlpha(selected.color, 0.65)}`,
+    };
+  }, [selected]);
+
+  const primaryAccent = useMemo(() => {
+    if (!selected) return undefined;
+    return {
+      backgroundColor: withAlpha(selected.color, 0.18),
+      borderColor: withAlpha(selected.color, 0.32),
+      color: lightenColor(selected.color, 0.28),
+    };
+  }, [selected]);
+
+  const histogramFillId = useMemo(() => (selected ? `rank-hist-${selected.id}` : "rank-hist"), [selected]);
+
+  const histogramStroke = useMemo(() => (selected ? withAlpha(selected.color, 0.65) : "#52525b"), [selected]);
 
   const renderTooltip = useMemo(() => {
     const formatter = ({ active, payload }: RankTooltipProps) => {
@@ -197,30 +239,36 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
           <>
             <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
               <div
-                className="relative overflow-hidden rounded-2xl border border-neutral-800 bg-neutral-900/80 p-6 shadow-[0_24px_60px_-45px_rgba(0,0,0,0.9)]"
+                className="relative overflow-hidden rounded-2xl border bg-neutral-950/70 p-6 shadow-[0_24px_60px_-45px_rgba(0,0,0,0.9)] backdrop-blur"
                 style={heroBackground}
               >
                 <div
                   className="pointer-events-none absolute -right-16 -top-24 h-56 w-56 rounded-full blur-3xl"
-                  style={{ background: withAlpha(selected.color, 0.35) }}
+                  style={heroOrbStyle}
                 />
                 <div className="relative z-10 flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
                   <div className="space-y-4">
-                    <span className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-neutral-900/70 px-3 py-1 text-xs font-medium tracking-wide text-neutral-200">
-                      <span className="h-2 w-2 rounded-full" style={{ backgroundColor: selected.color }} />
+                    <span
+                      className="inline-flex items-center gap-2 rounded-full border bg-neutral-900/60 px-3 py-1 text-xs font-medium tracking-wide"
+                      style={primaryAccent}
+                    >
+                      <span className="h-2 w-2 rounded-full border border-white/30" style={{ backgroundColor: selected.color }} />
                       {selected.name}
                     </span>
                     <div>
                       <div className="text-[11px] uppercase tracking-[0.35em] text-neutral-400">総合順位</div>
                       <div className="mt-2 flex flex-wrap items-baseline gap-3">
                         <span className="text-4xl font-semibold text-neutral-50">{selected.rank}位</span>
-                        <span className="rounded-full border border-neutral-700/80 bg-neutral-900/70 px-3 py-1 text-xs font-medium text-neutral-300">
+                        <span className="rounded-full border border-neutral-700/60 bg-neutral-900/60 px-3 py-1 text-xs font-medium text-neutral-200">
                           {selected.gamesPlayed}戦
                         </span>
                       </div>
                     </div>
                   </div>
-                  <div className="rounded-2xl border border-white/10 bg-neutral-900/80 px-6 py-4 text-right shadow-inner shadow-black/50">
+                  <div
+                    className="rounded-2xl border px-6 py-4 text-right shadow-inner shadow-black/40"
+                    style={totalScoreStyles}
+                  >
                     <div className="text-xs text-neutral-400">総スコア</div>
                     <div className="mt-1 text-5xl font-bold tracking-tight text-emerald-300">{formatScore(selected.totalScore)}</div>
                     <div className="text-[11px] uppercase tracking-[0.35em] text-neutral-500">累計</div>
@@ -283,19 +331,19 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                 <div className="mt-6 rounded-xl border border-neutral-800/60 bg-neutral-900/70 p-4 text-sm">
                   <div className="text-xs uppercase tracking-[0.3em] text-neutral-500">順位回数</div>
                   <dl className="mt-3 grid grid-cols-2 gap-3 text-sm">
-                    <div className="rounded-lg border border-white/5 bg-neutral-900/80 px-3 py-2">
+                    <div className="rounded-lg border border-white/5 bg-neutral-900/70 px-3 py-2">
                       <dt className="text-xs text-neutral-400">1位</dt>
                       <dd className="font-mono text-neutral-100">{selected.rankCounts.first}回</dd>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-neutral-900/80 px-3 py-2">
+                    <div className="rounded-lg border border-white/5 bg-neutral-900/70 px-3 py-2">
                       <dt className="text-xs text-neutral-400">2位</dt>
                       <dd className="font-mono text-neutral-100">{selected.rankCounts.second}回</dd>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-neutral-900/80 px-3 py-2">
+                    <div className="rounded-lg border border-white/5 bg-neutral-900/70 px-3 py-2">
                       <dt className="text-xs text-neutral-400">3位</dt>
                       <dd className="font-mono text-neutral-100">{selected.rankCounts.third}回</dd>
                     </div>
-                    <div className="rounded-lg border border-white/5 bg-neutral-900/80 px-3 py-2">
+                    <div className="rounded-lg border border-white/5 bg-neutral-900/70 px-3 py-2">
                       <dt className="text-xs text-neutral-400">4位</dt>
                       <dd className="font-mono text-neutral-100">{selected.rankCounts.fourth}回</dd>
                     </div>
@@ -352,6 +400,12 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                 <div className="h-[260px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={histogramData} margin={{ top: 12, right: 12, left: 4, bottom: 4 }}>
+                      <defs>
+                        <linearGradient id={histogramFillId} x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor={lightenColor(selected.color, 0.4)} />
+                          <stop offset="100%" stopColor={withAlpha(selected.color, 0.35)} />
+                        </linearGradient>
+                      </defs>
                       <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
                       <XAxis dataKey="rank" stroke="#a1a1aa" tick={{ fontSize: 12 }} axisLine={{ stroke: "#3f3f46" }} />
                       <YAxis
@@ -362,7 +416,7 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                         tickFormatter={(value) => `${value}回`}
                       />
                       <Tooltip cursor={{ fill: "#18181b" }} formatter={(value) => [`${value as number}回`, "取得回数"]} />
-                      <Bar dataKey="count" radius={[6, 6, 0, 0]} fill={selected.color} />
+                      <Bar dataKey="count" radius={[7, 7, 0, 0]} fill={`url(#${histogramFillId})`} stroke={histogramStroke} strokeWidth={1.2} />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
