@@ -250,15 +250,15 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
 }
 
 export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
-  const [canvasWidth, setCanvasWidth] = useState(0);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const [containerWidth, setContainerWidth] = useState(0);
 
   useEffect(() => {
-    const element = containerRef.current;
+    const element = scrollRef.current;
     if (!element) return;
 
     const updateWidth = () => {
-      setCanvasWidth(Math.floor(element.getBoundingClientRect().width));
+      setContainerWidth(Math.floor(element.getBoundingClientRect().width));
     };
 
     updateWidth();
@@ -305,6 +305,11 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
     });
   }, [players]);
 
+  const MIN_CANVAS_WIDTH = 960;
+  const hasMeasured = containerWidth > 0;
+  const canvasWidth = hasMeasured ? Math.max(containerWidth, MIN_CANVAS_WIDTH) : 0;
+  const isScrollable = hasMeasured && containerWidth < MIN_CANVAS_WIDTH;
+
   return (
     <Card className="bg-neutral-900/60 border-neutral-800">
       <CardHeader className="pb-2">
@@ -312,9 +317,25 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
         <p className="text-sm text-neutral-400">最終累計スコアのランキング</p>
       </CardHeader>
       <CardContent className="pt-4">
-        <div ref={containerRef} className="w-full overflow-hidden">
-          {canvasWidth > 0 ? (
-            <LeaderboardCanvas rows={rows} width={canvasWidth} height={Math.max(360, rows.length * 60 + 120)} />
+        <div className="relative">
+          <div
+            ref={scrollRef}
+            className="w-full overflow-x-auto"
+          >
+            <div className="min-w-[960px]">
+              {canvasWidth > 0 ? (
+                <LeaderboardCanvas
+                  rows={rows}
+                  width={canvasWidth}
+                  height={Math.max(360, rows.length * 60 + 120)}
+                />
+              ) : null}
+            </div>
+          </div>
+          {isScrollable ? (
+            <div className="pointer-events-none absolute inset-y-3 right-0 w-16 bg-gradient-to-l from-neutral-900/90 to-transparent flex flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-300">
+              <span className="rotate-90">Swipe</span>
+            </div>
           ) : null}
         </div>
       </CardContent>
