@@ -10,7 +10,6 @@ type LeaderboardRow = {
   points: number;
   diff: string | number;
   games: number;
-  trend?: number;
 };
 
 type LeaderboardCanvasProps = {
@@ -76,30 +75,6 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       const g = (bigint >> 8) & 255;
       const b = bigint & 255;
       return `rgba(${r}, ${g}, ${b}, ${a})`;
-    }
-
-    function drawArrow(
-      context: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      dir: "up" | "down",
-    ) {
-      context.save();
-      context.translate(x, y);
-      context.beginPath();
-      if (dir === "up") {
-        context.moveTo(0, 10);
-        context.lineTo(8, -6);
-        context.lineTo(-8, -6);
-      } else {
-        context.moveTo(0, -10);
-        context.lineTo(8, 6);
-        context.lineTo(-8, 6);
-      }
-      context.closePath();
-      context.fillStyle = dir === "up" ? "#10b981" : "#ef4444";
-      context.fill();
-      context.restore();
     }
 
     function drawLeaderboard(
@@ -220,9 +195,6 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
         const gamesX = rightX + rightSectionWidth * 0.92;
         context.fillText(`${row.games} 戦`, gamesX, y + rowH / 2 - 6);
 
-        if (row.trend && row.trend !== 0) {
-          drawArrow(context, pointsX + 16, y + rowH / 2 - 4, row.trend > 0 ? "up" : "down");
-        }
       });
 
       context.restore();
@@ -280,13 +252,6 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
     const leader = sorted[0]?.totalScore ?? 0;
 
     return sorted.map((player, index) => {
-      const history = player.rankHistory.filter((entry) => typeof entry.rank === "number");
-      const lastRank = history[history.length - 1]?.rank ?? null;
-      const prevRank = history[history.length - 2]?.rank ?? null;
-      const trend =
-        prevRank && lastRank
-          ? Math.sign(prevRank - lastRank) * Math.min(Math.abs(prevRank - lastRank), 3)
-          : 0;
       const diffValue = player.totalScore - leader;
       const formattedDiff = diffValue === 0
         ? "±0.0"
@@ -300,7 +265,6 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
         points: player.totalScore,
         diff: formattedDiff,
         games: player.gamesPlayed,
-        trend,
       } satisfies LeaderboardRow;
     });
   }, [players]);
