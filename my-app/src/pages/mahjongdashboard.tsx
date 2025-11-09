@@ -1,7 +1,9 @@
 import { HeaderBar } from "@/components/header";
 import { MatchHistoryTable } from "@/components/matchhistorytable";
+import { PlayerSummaryPanel } from "@/components/playersummarypanel";
 import { ScoreTimelineChart } from "@/components/scoretimelinechart";
 import { buildMatchHistory } from "@/data/match-history";
+import { buildPlayerSummaries } from "@/data/player-summary";
 import { buildChartData } from "@/data/score";
 import type { SeasonPayload } from "@/types/propsType";
 
@@ -36,6 +38,7 @@ const headerProps = {
 };
 
 const { players, timeline } = buildChartData(payload);
+const playerSummaries = buildPlayerSummaries(payload);
 const matchHistory = buildMatchHistory(payload);
 
 export default function MahjongDashboard() {
@@ -44,6 +47,7 @@ export default function MahjongDashboard() {
       <HeaderBar {...headerProps} />
       <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
         <ScoreTimelineChart players={players} timeline={timeline} />
+        <PlayerSummaryPanel players={playerSummaries} />
         <MatchHistoryTable matches={matchHistory} />
       </div>
       <footer className="max-w-none mx-auto px-6 pb-8 text-xs text-neutral-500">
