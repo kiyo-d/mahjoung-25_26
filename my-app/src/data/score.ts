@@ -1,27 +1,5 @@
+import { ID_COLOR, NAME_TO_ID, PLAYER_ORDER } from "@/lib/player-mappings";
 import type { SeasonPayload, Player, PlayerId, TimelinePoint } from "@/types/propsType";
-
-// 日本語名 → 内部ID
-const NAME_TO_ID: Record<string, PlayerId> = {
-  "きよ": "KIYO",
-  "やまだ": "YAMADA",
-  "こたろー": "KOTARO",
-  "れい": "REI",
-  "よしたに": "YOSHITANI",
-  "ひなた": "HINATA",
-};
-
-// 線色（任意）
-const ID_COLOR: Record<PlayerId, string> = {
-  KIYO: "#22c55e",
-  YAMADA: "#60a5fa",
-  KOTARO: "#f97316",
-  REI: "#eab308",
-  YOSHITANI: "#a78bfa",
-  HINATA: "#f43f5e",
-};
-
-// 表示順を固定（凡例や線順が安定）
-const ORDER: PlayerId[] = ["KIYO", "YAMADA", "KOTARO", "REI", "YOSHITANI", "HINATA"];
 
 // "YYYY-MM-DD" → "MM/DD"
 function fmtMD(date: string): string {
@@ -58,7 +36,7 @@ export function buildChartData(payload: SeasonPayload): {
     .filter((x): x is Player => !!x);
 
   // 2) 固定順へ並べ替え（存在するもののみ）
-  const players = ORDER
+  const players = PLAYER_ORDER
     .map((id) => rawPlayers.find((p) => p.id === id))
     .filter((p): p is Player => !!p);
 
@@ -87,7 +65,7 @@ export function buildChartData(payload: SeasonPayload): {
       dailyIndex: nth,
       gameNumber,
     };
-    for (const id of ORDER) {
+    for (const id of PLAYER_ORDER) {
       row[id] = roundToTenth(cumulative[id]);
     }
 
