@@ -81,6 +81,10 @@ type RankTooltipProps = TooltipProps<number, string> & {
   payload?: Payload<number, string>[];
 };
 
+type HistogramTooltipProps = TooltipProps<number, string> & {
+  payload?: Payload<number, string>[];
+};
+
 type PlayerSummaryPanelProps = {
   players: PlayerSummaryDetail[];
 };
@@ -117,8 +121,8 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
     () =>
       selected
         ? ([
-            { label: "トップ率", value: selected.topRate, color: "bg-emerald-500" },
-            { label: "連対率", value: selected.winRate, color: "bg-sky-500" },
+            { label: "トップ率", value: selected.winRate, color: "bg-emerald-500" },
+            { label: "連対率", value: selected.topRate, color: "bg-sky-500" },
             { label: "ラス率", value: selected.lastRate, color: "bg-rose-500" },
           ] as const)
         : [],
@@ -143,6 +147,7 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
     return selected.rankHistory
       .filter((entry) => typeof entry.rank === "number")
       .slice(-8)
+      .reverse()
       .map((entry) => ({ key: entry.gameNumber, rank: entry.rank as number }));
   }, [selected]);
 
@@ -183,6 +188,42 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
   const histogramFillId = useMemo(() => (selected ? `rank-hist-${selected.id}` : "rank-hist"), [selected]);
 
   const histogramStroke = useMemo(() => (selected ? withAlpha(selected.color, 0.65) : "#52525b"), [selected]);
+
+  const histogramTooltip = useMemo(() => {
+    if (!selected) {
+      return undefined;
+    }
+
+    const accent = lightenColor(selected.color, 0.25);
+    const subtle = withAlpha(selected.color, 0.25);
+
+    const formatter = ({ active, payload }: HistogramTooltipProps) => {
+      if (!active || !payload?.length) return null;
+      const entry = payload[0];
+      const dataPoint = entry?.payload as RankHistogramDatum | undefined;
+      if (!dataPoint) return null;
+
+      return (
+        <div className="min-w-[160px] rounded-lg border border-neutral-800/80 bg-neutral-950/95 p-3 text-sm shadow-lg shadow-black/40">
+          <div className="text-xs uppercase tracking-wide text-neutral-400">取得順位</div>
+          <div className="mt-1 flex items-baseline justify-between">
+            <span className="text-lg font-semibold" style={{ color: accent }}>
+              {dataPoint.rank}
+            </span>
+            <span className="font-mono text-base text-neutral-100">{dataPoint.count}回</span>
+          </div>
+          <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-neutral-800">
+            <span
+              className="block h-full rounded-full"
+              style={{ background: `linear-gradient(90deg, ${accent}, ${subtle})` }}
+            />
+          </div>
+        </div>
+      );
+    };
+
+    return formatter;
+  }, [selected]);
 
   const renderTooltip = useMemo(() => {
     const formatter = ({ active, payload }: RankTooltipProps) => {
@@ -415,7 +456,11 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                         axisLine={{ stroke: "#3f3f46" }}
                         tickFormatter={(value) => `${value}回`}
                       />
-                      <Tooltip cursor={{ fill: "#18181b" }} formatter={(value) => [`${value as number}回`, "取得回数"]} />
+                      <Tooltip
+                        cursor={{ fill: "rgba(24, 24, 27, 0.82)" }}
+                        content={histogramTooltip}
+                        wrapperStyle={{ outline: "none" }}
+                      />
                       <Bar dataKey="count" radius={[7, 7, 0, 0]} fill={`url(#${histogramFillId})`} stroke={histogramStroke} strokeWidth={1.2} />
                     </BarChart>
                   </ResponsiveContainer>
