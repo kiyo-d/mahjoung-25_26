@@ -19,11 +19,11 @@ export const ID_TO_NAME: Record<PlayerId, string> = {
 };
 
 export const ID_COLOR: Record<PlayerId, string> = {
-  KIYO: "#22c55e",
-  YAMADA: "#60a5fa",
-  KOTARO: "#f97316",
+  KIYO: "#FFB7C5",
+  YAMADA: "#0077CC",
+  KOTARO: "#FF2D9C",
   REI: "#eab308",
-  YOSHITANI: "#a78bfa",
+  YOSHITANI: "#B49657",
   HINATA: "#f43f5e",
 };
 
