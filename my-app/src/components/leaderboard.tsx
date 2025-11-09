@@ -109,10 +109,12 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       data: LeaderboardRow[],
     ) {
       const padding = 28;
-      const leftWidth = Math.round(w * 0.42);
-      const rightX = leftWidth + padding;
       const rowCount = Math.max(data.length, 1);
-      const rowH = Math.floor((h - padding * 2) / rowCount);
+      const minRowHeight = 52;
+      const availableHeight = Math.max(h - padding * 2, rowCount * minRowHeight);
+      const rowH = Math.floor(availableHeight / rowCount);
+      const leftWidth = Math.round(w * 0.44);
+      const rightX = leftWidth + padding;
       const barPad = 6;
 
       context.clearRect(0, 0, w, h);
@@ -125,17 +127,18 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       context.fillStyle = "#fff";
       context.font = '28px "Yu Gothic UI", Meiryo, sans-serif';
       context.textBaseline = "top";
-      context.fillText("最終累計スコア", 4, -4);
+      context.fillText("最終累計スコア", 4, -2);
 
       context.font = "14px sans-serif";
       context.fillStyle = "rgba(255,255,255,0.85)";
-      context.fillText("チーム / プレイヤー", 8, -4);
-      context.fillText("トータルポイント", rightX + (w - rightX) / 3 - 30, -4);
-      context.fillText("ポイント差", rightX + (w - rightX) / 3 + 60, -4);
-      context.fillText("試合数", rightX + (w - rightX) - 68, -4);
+      const rightSectionWidth = w - rightX;
+      context.fillText("チーム / プレイヤー", 8, 22);
+      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.35, 22);
+      context.fillText("ポイント差", rightX + rightSectionWidth * 0.66, 22);
+      context.fillText("試合数", rightX + rightSectionWidth * 0.9, 22);
 
       data.forEach((row, index) => {
-        const y = index * rowH + 36;
+        const y = index * rowH + 54;
         if (index % 2 === 1) {
           context.fillStyle = "rgba(255,255,255,0.03)";
           roundRect(
@@ -200,23 +203,25 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
 
         context.font = 'bold 20px "Yu Gothic UI", Meiryo, sans-serif';
         context.fillStyle = "rgba(255,255,255,0.95)";
-        context.fillText(row.team, 8, y + rowH / 2 - 6);
+        context.fillText(row.team, 8, y + rowH / 2 - 10);
 
         context.textAlign = "right";
         context.font = '28px "Segoe UI", sans-serif';
         context.fillStyle = "rgba(255,255,255,0.95)";
-        const pointsX = w - 220;
-        context.fillText(row.points.toFixed(1), pointsX, y + 6);
+        const pointsX = rightX + rightSectionWidth * 0.35 + 60;
+        context.fillText(row.points.toFixed(1), pointsX, y + rowH / 2 - 12);
 
         context.font = "16px sans-serif";
         context.fillStyle = "rgba(255,255,255,0.85)";
-        context.fillText(String(row.diff), pointsX + 140, y + 10);
+        const diffX = rightX + rightSectionWidth * 0.66 + 16;
+        context.fillText(String(row.diff), diffX, y + rowH / 2 - 6);
 
         context.fillStyle = "rgba(255,255,255,0.85)";
-        context.fillText(`${row.games} 戦`, w - 28, y + 10);
+        const gamesX = rightX + rightSectionWidth * 0.92;
+        context.fillText(`${row.games} 戦`, gamesX, y + rowH / 2 - 6);
 
         if (row.trend && row.trend !== 0) {
-          drawArrow(context, pointsX + 12, y + 10, row.trend > 0 ? "up" : "down");
+          drawArrow(context, pointsX + 16, y + rowH / 2 - 4, row.trend > 0 ? "up" : "down");
         }
       });
 
@@ -226,7 +231,19 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       roundRect(context, padding, h - 34, w - padding * 2, 20, 6, true, false);
     }
 
-    drawLeaderboard(ctx, width, height, rows);
+    const rowCount = Math.max(rows.length, 1);
+    const minRowHeight = 52;
+    const padding = 28;
+    const computedHeight = Math.max(height, padding * 2 + rowCount * minRowHeight);
+    if (computedHeight !== height) {
+      const DPR = window.devicePixelRatio || 1;
+      c.height = computedHeight * DPR;
+      c.style.height = `${computedHeight}px`;
+      ctx.resetTransform?.();
+      ctx.scale(DPR, DPR);
+    }
+
+    drawLeaderboard(ctx, width, computedHeight, rows);
   }, [rows, width, height]);
 
   return <canvas ref={ref} />;
@@ -297,7 +314,7 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
       <CardContent className="pt-4">
         <div ref={containerRef} className="w-full overflow-hidden">
           {canvasWidth > 0 ? (
-            <LeaderboardCanvas rows={rows} width={canvasWidth} height={400} />
+            <LeaderboardCanvas rows={rows} width={canvasWidth} height={Math.max(360, rows.length * 60 + 120)} />
           ) : null}
         </div>
       </CardContent>
