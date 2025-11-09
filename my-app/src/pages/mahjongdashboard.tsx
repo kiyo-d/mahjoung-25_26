@@ -1,5 +1,6 @@
 import { HeaderBar } from "@/components/header";
 import { MatchHistoryTable } from "@/components/matchhistorytable";
+import { Leaderboard } from "@/components/leaderboard";
 import { PlayerSummaryPanel } from "@/components/playersummarypanel";
 import { ScoreTimelineChart } from "@/components/scoretimelinechart";
 import { buildMatchHistory } from "@/data/match-history";
@@ -47,6 +48,7 @@ export default function MahjongDashboard() {
       <HeaderBar {...headerProps} />
       <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
         <ScoreTimelineChart players={players} timeline={timeline} />
+        <Leaderboard players={playerSummaries} />
         <PlayerSummaryPanel players={playerSummaries} />
         <MatchHistoryTable matches={matchHistory} />
       </div>
