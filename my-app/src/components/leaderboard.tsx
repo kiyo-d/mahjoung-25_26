@@ -113,7 +113,7 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       context.textAlign = "right";
       context.fillText("トータルポイント", rightX + rightSectionWidth * 0.32 + 40, 22);
       context.fillText("首位との差", rightX + rightSectionWidth * 0.58 + 16, 22);
-      context.fillText("ひとつ上との差", rightX + rightSectionWidth * 0.75 + 16, 22);
+      context.fillText("上との差", rightX + rightSectionWidth * 0.75 + 16, 22);
       context.fillText("試合数", rightX + rightSectionWidth * 0.92, 22);
 
       data.forEach((row, index) => {
