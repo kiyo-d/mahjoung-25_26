@@ -8,7 +8,8 @@ type LeaderboardRow = {
   tag?: string;
   color?: string;
   points: number;
-  diff: string | number;
+  diffToLeader: string;
+  diffToPrevious: string;
   games: number;
 };
 
@@ -108,9 +109,10 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       context.fillStyle = "rgba(255,255,255,0.85)";
       const rightSectionWidth = w - rightX;
       context.fillText("チーム / プレイヤー", 8, 22);
-      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.35, 22);
-      context.fillText("ポイント差", rightX + rightSectionWidth * 0.66, 22);
-      context.fillText("試合数", rightX + rightSectionWidth * 0.9, 22);
+      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.32, 22);
+      context.fillText("首位との差", rightX + rightSectionWidth * 0.58, 22);
+      context.fillText("直上との差", rightX + rightSectionWidth * 0.75, 22);
+      context.fillText("試合数", rightX + rightSectionWidth * 0.92, 22);
 
       data.forEach((row, index) => {
         const y = index * rowH + 54;
@@ -183,13 +185,16 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
         context.textAlign = "right";
         context.font = '28px "Segoe UI", sans-serif';
         context.fillStyle = "rgba(255,255,255,0.95)";
-        const pointsX = rightX + rightSectionWidth * 0.35 + 60;
+        const pointsX = rightX + rightSectionWidth * 0.32 + 40;
         context.fillText(row.points.toFixed(1), pointsX, y + rowH / 2 - 12);
 
         context.font = "16px sans-serif";
         context.fillStyle = "rgba(255,255,255,0.85)";
-        const diffX = rightX + rightSectionWidth * 0.66 + 16;
-        context.fillText(String(row.diff), diffX, y + rowH / 2 - 6);
+        const diffLeaderX = rightX + rightSectionWidth * 0.58 + 16;
+        context.fillText(row.diffToLeader, diffLeaderX, y + rowH / 2 - 6);
+
+        const diffPrevX = rightX + rightSectionWidth * 0.75 + 16;
+        context.fillText(row.diffToPrevious, diffPrevX, y + rowH / 2 - 6);
 
         context.fillStyle = "rgba(255,255,255,0.85)";
         const gamesX = rightX + rightSectionWidth * 0.92;
@@ -251,11 +256,18 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
     const sorted = [...players].sort((a, b) => b.totalScore - a.totalScore);
     const leader = sorted[0]?.totalScore ?? 0;
 
+    const formatDiff = (value: number | null) => {
+      if (value === null) return "—";
+      if (value === 0) return "±0.0";
+      return `${value > 0 ? "+" : ""}${value.toFixed(1)}`;
+    };
+
     return sorted.map((player, index) => {
-      const diffValue = player.totalScore - leader;
-      const formattedDiff = diffValue === 0
-        ? "±0.0"
-        : `${diffValue > 0 ? "+" : ""}${diffValue.toFixed(1)}`;
+      const diffToLeaderValue = player.totalScore - leader;
+      const previousScore = index > 0 ? sorted[index - 1]?.totalScore ?? null : null;
+      const diffToPreviousValue = previousScore === null
+        ? null
+        : previousScore - player.totalScore;
 
       return {
         rank: index + 1,
@@ -263,7 +275,8 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
         tag: player.id,
         color: player.color,
         points: player.totalScore,
-        diff: formattedDiff,
+        diffToLeader: formatDiff(diffToLeaderValue),
+        diffToPrevious: formatDiff(diffToPreviousValue),
         games: player.gamesPlayed,
       } satisfies LeaderboardRow;
     });
