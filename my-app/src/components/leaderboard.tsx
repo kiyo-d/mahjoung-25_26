@@ -108,10 +108,12 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       context.font = "14px sans-serif";
       context.fillStyle = "rgba(255,255,255,0.85)";
       const rightSectionWidth = w - rightX;
+      context.textAlign = "left";
       context.fillText("チーム / プレイヤー", 8, 22);
-      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.32, 22);
-      context.fillText("首位との差", rightX + rightSectionWidth * 0.58, 22);
-      context.fillText("直上との差", rightX + rightSectionWidth * 0.75, 22);
+      context.textAlign = "right";
+      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.32 + 40, 22);
+      context.fillText("首位との差", rightX + rightSectionWidth * 0.58 + 16, 22);
+      context.fillText("直上との差", rightX + rightSectionWidth * 0.75 + 16, 22);
       context.fillText("試合数", rightX + rightSectionWidth * 0.92, 22);
 
       data.forEach((row, index) => {
