@@ -12,8 +12,10 @@ import {
   type TooltipProps,
 } from "recharts";
 import type { Payload } from "recharts/types/component/DefaultTooltipContent";
+import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { PlayerSummaryDetail } from "@/data/player-summary";
 
 const numberFormat = new Intl.NumberFormat("ja-JP", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -151,6 +153,22 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
       .map((entry) => ({ key: entry.gameNumber, rank: entry.rank as number }));
   }, [selected]);
 
+  const trend = useMemo(() => {
+    if (!selected || selected.rankHistory.length < 5) return "flat";
+    const recentGames = selected.rankHistory
+      .filter((g) => typeof g.rank === "number")
+      .slice(-5);
+    if (recentGames.length < 2) return "flat";
+    
+    const recentAvg = recentGames.reduce((acc, curr) => acc + (curr.rank ?? 0), 0) / recentGames.length;
+    const overallAvg = selected.averageRank;
+    
+    // Lower rank is better, so if recentAvg < overallAvg, it's an improvement (Up trend in performance)
+    if (recentAvg < overallAvg - 0.15) return "up";
+    if (recentAvg > overallAvg + 0.15) return "down";
+    return "flat";
+  }, [selected]);
+
   const heroBackground = useMemo(() => {
     if (!selected) return undefined;
     return {
@@ -253,26 +271,30 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
   return (
     <Card className="border-neutral-800 bg-neutral-950/80 text-neutral-100">
       <CardHeader className="gap-3 pb-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <CardTitle className="text-lg font-semibold text-neutral-50">プレイヤーサマリー</CardTitle>
             <p className="text-xs text-neutral-500">シーズン成績をプレイヤー別に比較できます</p>
           </div>
-          <label className="flex flex-col gap-1 text-xs text-neutral-400">
-            プレイヤー選択
-            <select
-              className="w-48 rounded-md border border-neutral-700 bg-neutral-900/80 px-3 py-2 text-sm text-neutral-100 transition focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 disabled:cursor-not-allowed"
+          <div className="flex flex-col gap-1">
+            <span className="text-xs text-neutral-400">プレイヤー選択</span>
+            <Select
               value={selected?.id ?? ""}
-              onChange={(event) => setSelectedId(event.target.value as PlayerSummaryDetail["id"])}
+              onValueChange={(value) => setSelectedId(value as PlayerSummaryDetail["id"])}
               disabled={!players.length}
             >
-              {players.map((player) => (
-                <option key={player.id} value={player.id}>
-                  {player.name}
-                </option>
-              ))}
-            </select>
-          </label>
+              <SelectTrigger className="w-full sm:w-48 bg-neutral-900/80 border-neutral-700">
+                <SelectValue placeholder="プレイヤーを選択" />
+              </SelectTrigger>
+              <SelectContent>
+                {players.map((player) => (
+                  <SelectItem key={player.id} value={player.id}>
+                    {player.name}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-7">
@@ -303,6 +325,24 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                         <span className="rounded-full border border-neutral-700/60 bg-neutral-900/60 px-3 py-1 text-xs font-medium text-neutral-200">
                           {selected.gamesPlayed}戦
                         </span>
+                        {trend === "up" && (
+                          <span className="flex items-center gap-1 text-xs font-medium text-emerald-400 bg-emerald-400/10 px-2 py-0.5 rounded-full border border-emerald-400/20">
+                            <TrendingUp className="w-3 h-3" />
+                            <span>好調</span>
+                          </span>
+                        )}
+                        {trend === "down" && (
+                          <span className="flex items-center gap-1 text-xs font-medium text-rose-400 bg-rose-400/10 px-2 py-0.5 rounded-full border border-rose-400/20">
+                            <TrendingDown className="w-3 h-3" />
+                            <span>不調</span>
+                          </span>
+                        )}
+                        {trend === "flat" && (
+                          <span className="flex items-center gap-1 text-xs font-medium text-neutral-400 bg-neutral-400/10 px-2 py-0.5 rounded-full border border-neutral-400/20">
+                            <Minus className="w-3 h-3" />
+                            <span>安定</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -401,32 +441,39 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                 <div className="h-[260px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={chartData} margin={{ top: 12, right: 16, left: 12, bottom: 12 }}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
                       <XAxis
                         dataKey="gameNumber"
-                        stroke="#a1a1aa"
-                        tick={{ fontSize: 12 }}
+                        stroke="#52525b"
+                        tick={{ fontSize: 11, fill: "#a1a1aa" }}
                         allowDecimals={false}
                         tickLine={false}
-                        axisLine={{ stroke: "#3f3f46" }}
+                        axisLine={false}
+                        dy={10}
                       />
                       <YAxis
                         domain={[1, 4]}
                         ticks={rankTicks}
-                        stroke="#a1a1aa"
-                        tick={{ fontSize: 12 }}
+                        stroke="#52525b"
+                        tick={{ fontSize: 11, fill: "#a1a1aa" }}
                         allowDecimals={false}
                         reversed
                         tickFormatter={(value) => rankLabel[value as keyof typeof rankLabel] ?? `${value}位`}
+                        tickLine={false}
+                        axisLine={false}
+                        dx={-10}
                       />
-                      <Tooltip cursor={{ stroke: "#52525b", strokeWidth: 1 }} content={renderTooltip} />
+                      <Tooltip 
+                        cursor={{ stroke: "#52525b", strokeWidth: 1, strokeDasharray: "4 4" }} 
+                        content={renderTooltip} 
+                      />
                       <Line
                         type="monotone"
                         dataKey="rank"
                         stroke={selected.color}
-                        strokeWidth={2.6}
-                        dot={{ r: 4 }}
-                        activeDot={{ r: 6 }}
+                        strokeWidth={3}
+                        dot={{ r: 4, strokeWidth: 0, fill: selected.color }}
+                        activeDot={{ r: 6, strokeWidth: 0, fill: selected.color }}
                         connectNulls={false}
                       />
                     </LineChart>
@@ -447,21 +494,36 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                           <stop offset="100%" stopColor={withAlpha(selected.color, 0.35)} />
                         </linearGradient>
                       </defs>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-                      <XAxis dataKey="rank" stroke="#a1a1aa" tick={{ fontSize: 12 }} axisLine={{ stroke: "#3f3f46" }} />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
+                      <XAxis 
+                        dataKey="rank" 
+                        stroke="#52525b" 
+                        tick={{ fontSize: 11, fill: "#a1a1aa" }} 
+                        axisLine={false} 
+                        tickLine={false}
+                        dy={10}
+                      />
                       <YAxis
                         allowDecimals={false}
-                        stroke="#a1a1aa"
-                        tick={{ fontSize: 12 }}
-                        axisLine={{ stroke: "#3f3f46" }}
+                        stroke="#52525b"
+                        tick={{ fontSize: 11, fill: "#a1a1aa" }}
+                        axisLine={false}
+                        tickLine={false}
                         tickFormatter={(value) => `${value}回`}
+                        dx={-10}
                       />
                       <Tooltip
-                        cursor={{ fill: "rgba(24, 24, 27, 0.82)" }}
+                        cursor={{ fill: "rgba(255, 255, 255, 0.05)" }}
                         content={histogramTooltip}
                         wrapperStyle={{ outline: "none" }}
                       />
-                      <Bar dataKey="count" radius={[7, 7, 0, 0]} fill={`url(#${histogramFillId})`} stroke={histogramStroke} strokeWidth={1.2} />
+                      <Bar 
+                        dataKey="count" 
+                        radius={[6, 6, 0, 0]} 
+                        fill={`url(#${histogramFillId})`} 
+                        stroke={histogramStroke} 
+                        strokeWidth={1} 
+                      />
                     </BarChart>
                   </ResponsiveContainer>
                 </div>

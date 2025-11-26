@@ -31,7 +31,7 @@ const formatDelta = (value: number): string => {
   return `±${formatted}`;
 };
 
-export function ScoreTimelineChart({ timeline, players }:{
+export function ScoreTimelineChart({ timeline, players }: {
   timeline: TimelinePoint[]; players: Player[];
 }) {
   const playerMap = useMemo<Record<string, Player>>(
@@ -298,27 +298,53 @@ export function ScoreTimelineChart({ timeline, players }:{
         <div className="h-[340px]">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={timeline} margin={{ top: 10, right: 16, left: 12, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
+              <defs>
+                {players.map((p) => (
+                  <linearGradient key={p.id} id={`gradient-${p.id}`} x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor={p.color} stopOpacity={0.3} />
+                    <stop offset="95%" stopColor={p.color} stopOpacity={0} />
+                  </linearGradient>
+                ))}
+              </defs>
+              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" vertical={false} />
               <XAxis
                 dataKey="gameNumber"
                 type="number"
                 domain={xDomain}
                 ticks={xTicks}
-                stroke="#a1a1aa"
-                tick={{ fontSize: 12 }}
+                stroke="#52525b"
+                tick={{ fontSize: 11, fill: "#a1a1aa" }}
                 allowDecimals={false}
+                axisLine={false}
+                tickLine={false}
+                dy={10}
               />
               <YAxis
                 domain={yScale.domain}
                 ticks={yScale.ticks}
-                stroke="#a1a1aa"
+                stroke="#52525b"
                 tickFormatter={formatScore}
-                tick={{ fontSize: 12 }}
+                tick={{ fontSize: 11, fill: "#a1a1aa" }}
                 allowDecimals
+                axisLine={false}
+                tickLine={false}
+                dx={-10}
               />
-              <Tooltip content={renderTooltip} cursor={{ stroke: "#52525b", strokeWidth: 1 }} />
+              <Tooltip 
+                content={renderTooltip} 
+                cursor={{ stroke: "#52525b", strokeWidth: 1, strokeDasharray: "4 4" }} 
+              />
               {players.map(p => (
-                <Line key={p.id} type="monotone" dataKey={p.id} stroke={p.color} strokeWidth={2.4} dot={false} activeDot={{ r: 5 }} />
+                <Line 
+                  key={p.id} 
+                  type="monotone" 
+                  dataKey={p.id} 
+                  stroke={p.color} 
+                  strokeWidth={3} 
+                  dot={false} 
+                  activeDot={{ r: 6, strokeWidth: 0, fill: p.color }}
+                  fill={`url(#gradient-${p.id})`}
+                />
               ))}
             </LineChart>
           </ResponsiveContainer>

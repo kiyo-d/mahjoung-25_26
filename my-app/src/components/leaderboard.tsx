@@ -1,6 +1,8 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import type { PlayerSummaryDetail } from "@/data/player-summary";
+import { cn } from "@/lib/utils";
 
 type LeaderboardRow = {
   rank: number;
@@ -13,245 +15,7 @@ type LeaderboardRow = {
   games: number;
 };
 
-type LeaderboardCanvasProps = {
-  rows: LeaderboardRow[];
-  width?: number;
-  height?: number;
-};
-
-function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanvasProps) {
-  const ref = useRef<HTMLCanvasElement | null>(null);
-
-  useEffect(() => {
-    const c = ref.current;
-    if (!c) return;
-    const ctx = c.getContext("2d");
-    if (!ctx) return;
-
-    const DPR = window.devicePixelRatio || 1;
-    c.width = width * DPR;
-    c.height = height * DPR;
-    c.style.width = `${width}px`;
-    c.style.height = `${height}px`;
-    ctx.resetTransform?.();
-    ctx.scale(DPR, DPR);
-
-    function roundRect(
-      context: CanvasRenderingContext2D,
-      x: number,
-      y: number,
-      w: number,
-      h: number,
-      r = 6,
-      fill?: boolean,
-      stroke?: boolean,
-      fillColor?: string,
-    ) {
-      context.beginPath();
-      context.moveTo(x + r, y);
-      context.arcTo(x + w, y, x + w, y + h, r);
-      context.arcTo(x + w, y + h, x, y + h, r);
-      context.arcTo(x, y + h, x, y, r);
-      context.arcTo(x, y, x + w, y, r);
-      context.closePath();
-      if (fill) {
-        if (fillColor) {
-          context.save();
-          context.fillStyle = fillColor;
-          context.fill();
-          context.restore();
-        } else {
-          context.fill();
-        }
-      }
-      if (stroke) {
-        context.stroke();
-      }
-    }
-
-    function hexToRgba(hex: string, a: number) {
-      const cHex = hex.replace("#", "");
-      const bigint = parseInt(cHex, 16);
-      const r = (bigint >> 16) & 255;
-      const g = (bigint >> 8) & 255;
-      const b = bigint & 255;
-      return `rgba(${r}, ${g}, ${b}, ${a})`;
-    }
-
-    function drawLeaderboard(
-      context: CanvasRenderingContext2D,
-      w: number,
-      h: number,
-      data: LeaderboardRow[],
-    ) {
-      const padding = 28;
-      const rowCount = Math.max(data.length, 1);
-      const minRowHeight = 52;
-      const availableHeight = Math.max(h - padding * 2, rowCount * minRowHeight);
-      const rowH = Math.floor(availableHeight / rowCount);
-      const leftWidth = Math.round(w * 0.44);
-      const rightX = leftWidth + padding;
-      const barPad = 6;
-
-      context.clearRect(0, 0, w, h);
-      context.fillStyle = "rgba(0,0,0,0)";
-      context.fillRect(0, 0, w, h);
-
-      context.save();
-      context.translate(padding, padding);
-
-      context.fillStyle = "#fff";
-      context.font = '28px "Yu Gothic UI", Meiryo, sans-serif';
-      context.textBaseline = "top";
-      context.fillText("最終累計スコア", 4, -2);
-
-      context.font = "14px sans-serif";
-      context.fillStyle = "rgba(255,255,255,0.85)";
-      const rightSectionWidth = w - rightX;
-      context.textAlign = "left";
-      context.fillText("チーム / プレイヤー", 8, 22);
-      context.textAlign = "right";
-      context.fillText("トータルポイント", rightX + rightSectionWidth * 0.32 + 40, 22);
-      context.fillText("首位との差", rightX + rightSectionWidth * 0.58 + 16, 22);
-      context.fillText("上との差", rightX + rightSectionWidth * 0.75 + 16, 22);
-      context.fillText("試合数", rightX + rightSectionWidth * 0.92, 22);
-
-      data.forEach((row, index) => {
-        const y = index * rowH + 54;
-        if (index % 2 === 1) {
-          context.fillStyle = "rgba(255,255,255,0.03)";
-          roundRect(
-            context,
-            0,
-            y,
-            leftWidth + (w - rightX) - 10,
-            rowH - 4,
-            6,
-            true,
-            false,
-          );
-        }
-
-        const barW = Math.min(leftWidth - 24, 360);
-        const color = row.color ?? "#6b7280";
-
-        roundRect(
-          context,
-          0,
-          y + barPad / 2,
-          barW - 8,
-          rowH - barPad,
-          6,
-          true,
-          false,
-          "rgba(17,17,17,0.55)",
-        );
-        context.fillStyle = hexToRgba(color, 0.12);
-        roundRect(
-          context,
-          0,
-          y + barPad / 2,
-          barW - 8,
-          rowH - barPad,
-          6,
-          true,
-          false,
-        );
-
-        context.fillStyle = "rgba(0,0,0,0.55)";
-        roundRect(
-          context,
-          -padding + 6,
-          y + barPad / 2,
-          40,
-          rowH - barPad,
-          6,
-          true,
-          false,
-        );
-        context.fillStyle = "#fff";
-        context.font = "20px sans-serif";
-        context.textAlign = "center";
-        context.textBaseline = "middle";
-        context.fillText(row.rank.toString(), -padding + 26, y + rowH / 2);
-
-        context.font = "12px sans-serif";
-        context.fillStyle = "rgba(255,255,255,0.85)";
-        context.textAlign = "left";
-        context.fillText((row.tag ?? "").toUpperCase(), 8, y + 8);
-
-        context.font = 'bold 20px "Yu Gothic UI", Meiryo, sans-serif';
-        context.fillStyle = "rgba(255,255,255,0.95)";
-        context.fillText(row.team, 8, y + rowH / 2 - 10);
-
-        context.textAlign = "right";
-        context.font = '28px "Segoe UI", sans-serif';
-        context.fillStyle = "rgba(255,255,255,0.95)";
-        const pointsX = rightX + rightSectionWidth * 0.32 + 40;
-        context.fillText(row.points.toFixed(1), pointsX, y + rowH / 2 - 12);
-
-        context.font = "16px sans-serif";
-        context.fillStyle = "rgba(255,255,255,0.85)";
-        const diffLeaderX = rightX + rightSectionWidth * 0.58 + 16;
-        context.fillText(row.diffToLeader, diffLeaderX, y + rowH / 2 - 6);
-
-        const diffPrevX = rightX + rightSectionWidth * 0.75 + 16;
-        context.fillText(row.diffToPrevious, diffPrevX, y + rowH / 2 - 6);
-
-        context.fillStyle = "rgba(255,255,255,0.85)";
-        const gamesX = rightX + rightSectionWidth * 0.92;
-        context.fillText(`${row.games} 戦`, gamesX, y + rowH / 2 - 6);
-
-      });
-
-      context.restore();
-
-      context.fillStyle = "rgba(255,255,255,0.04)";
-      roundRect(context, padding, h - 34, w - padding * 2, 20, 6, true, false);
-    }
-
-    const rowCount = Math.max(rows.length, 1);
-    const minRowHeight = 52;
-    const padding = 28;
-    const computedHeight = Math.max(height, padding * 2 + rowCount * minRowHeight);
-    if (computedHeight !== height) {
-      const DPR = window.devicePixelRatio || 1;
-      c.height = computedHeight * DPR;
-      c.style.height = `${computedHeight}px`;
-      ctx.resetTransform?.();
-      ctx.scale(DPR, DPR);
-    }
-
-    drawLeaderboard(ctx, width, computedHeight, rows);
-  }, [rows, width, height]);
-
-  return <canvas ref={ref} />;
-}
-
 export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const [containerWidth, setContainerWidth] = useState(0);
-
-  useEffect(() => {
-    const element = scrollRef.current;
-    if (!element) return;
-
-    const updateWidth = () => {
-      setContainerWidth(Math.floor(element.getBoundingClientRect().width));
-    };
-
-    updateWidth();
-
-    const observer = new ResizeObserver(() => {
-      updateWidth();
-    });
-    observer.observe(element);
-
-    return () => {
-      observer.disconnect();
-    };
-  }, []);
-
   const rows = useMemo<LeaderboardRow[]>(() => {
     if (!players.length) return [];
 
@@ -284,39 +48,85 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
     });
   }, [players]);
 
-  const MIN_CANVAS_WIDTH = 960;
-  const hasMeasured = containerWidth > 0;
-  const canvasWidth = hasMeasured ? Math.max(containerWidth, MIN_CANVAS_WIDTH) : 0;
-  const isScrollable = hasMeasured && containerWidth < MIN_CANVAS_WIDTH;
-
   return (
-    <Card className="bg-neutral-900/60 border-neutral-800">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-neutral-100">リーダーボード</CardTitle>
-        <p className="text-sm text-neutral-400">最終累計スコアのランキング</p>
+    <Card className="glass-panel border-0 h-full flex flex-col">
+      <CardHeader className="pb-4 shrink-0">
+        <CardTitle className="text-neutral-100 flex items-center gap-2">
+          <span className="inline-block w-2 h-6 bg-emerald-500 rounded-full" />
+          リーダーボード
+        </CardTitle>
+        <p className="text-sm text-neutral-400 pl-4">最終累計スコアランキング</p>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="relative">
-          <div
-            ref={scrollRef}
-            className="w-full overflow-x-auto"
-          >
-            <div className="min-w-[960px]">
-              {canvasWidth > 0 ? (
-                <LeaderboardCanvas
-                  rows={rows}
-                  width={canvasWidth}
-                  height={Math.max(360, rows.length * 60 + 120)}
-                />
-              ) : null}
-            </div>
-          </div>
-          {isScrollable ? (
-            <div className="pointer-events-none absolute inset-y-3 right-0 w-16 bg-gradient-to-l from-neutral-900/90 to-transparent flex flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-300">
-              <span className="rotate-90">Swipe</span>
-            </div>
-          ) : null}
+      <CardContent className="p-0 flex-1 min-h-0">
+        <div className="grid grid-cols-[3rem_1fr_4rem] sm:grid-cols-[3rem_1fr_5rem_4rem] gap-2 px-6 py-2 text-xs font-medium text-neutral-500 uppercase tracking-wider border-b border-white/5">
+          <div className="text-center">#</div>
+          <div>Player</div>
+          <div className="text-right">Score</div>
+          <div className="text-right hidden sm:block">Games</div>
         </div>
+        <ScrollArea className="h-[400px] lg:h-[calc(100%-3rem)] w-full">
+          <div className="px-4 py-2 space-y-1">
+            {rows.map((row) => (
+              <div
+                key={row.tag}
+                className="group relative grid grid-cols-[3rem_1fr_4rem] sm:grid-cols-[3rem_1fr_5rem_4rem] gap-2 items-center p-3 rounded-xl transition-all hover:bg-white/5"
+              >
+                {/* Rank Badge */}
+                <div className="flex justify-center">
+                  <span
+                    className={cn(
+                      "flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold",
+                      row.rank === 1 && "bg-yellow-500/20 text-yellow-300 ring-1 ring-yellow-500/50",
+                      row.rank === 2 && "bg-slate-400/20 text-slate-300 ring-1 ring-slate-400/50",
+                      row.rank === 3 && "bg-amber-700/20 text-amber-600 ring-1 ring-amber-700/50",
+                      row.rank > 3 && "text-neutral-500"
+                    )}
+                  >
+                    {row.rank}
+                  </span>
+                </div>
+
+                {/* Player Name & Tag */}
+                <div className="min-w-0">
+                  <div className="font-bold text-neutral-200 truncate group-hover:text-emerald-300 transition-colors">
+                    {row.team}
+                  </div>
+                  <div className="text-xs text-neutral-500 truncate font-mono">
+                    {row.tag}
+                  </div>
+                </div>
+
+                {/* Score */}
+                <div className="text-right">
+                  <div className={cn(
+                    "font-mono text-lg font-bold tracking-tight",
+                    row.points > 0 ? "text-emerald-400" : row.points < 0 ? "text-rose-400" : "text-neutral-400"
+                  )}>
+                    {row.points.toFixed(1)}
+                  </div>
+                  <div className="text-[10px] text-neutral-600 font-mono">
+                    {row.diffToLeader}
+                  </div>
+                </div>
+
+                {/* Games (Hidden on mobile) */}
+                <div className="text-right hidden sm:block">
+                  <span className="inline-flex items-center px-2 py-1 rounded-md bg-neutral-900/50 border border-white/5 text-xs text-neutral-400 font-mono">
+                    {row.games}戦
+                  </span>
+                </div>
+                
+                {/* Hover Glow Effect */}
+                <div 
+                    className="absolute inset-0 rounded-xl bg-gradient-to-r from-transparent via-white/5 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500"
+                    style={{
+                        background: `linear-gradient(90deg, ${row.color}00 0%, ${row.color}10 50%, ${row.color}00 100%)`
+                    }}
+                />
+              </div>
+            ))}
+          </div>
+        </ScrollArea>
       </CardContent>
     </Card>
   );

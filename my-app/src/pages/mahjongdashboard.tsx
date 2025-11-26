@@ -46,13 +46,28 @@ export default function MahjongDashboard() {
   return (
     <div className="min-h-screen w-full bg-[radial-gradient(ellipse_at_top,_#0f0f0f,_#000)] text-neutral-100">
       <HeaderBar {...headerProps} />
-      <div className="max-w-6xl mx-auto px-6 py-6 space-y-6">
-        <ScoreTimelineChart players={players} timeline={timeline} />
-        <Leaderboard players={playerSummaries} />
-        <PlayerSummaryPanel players={playerSummaries} />
-        <MatchHistoryTable matches={matchHistory} />
-      </div>
-      <footer className="max-w-none mx-auto px-6 pb-8 text-xs text-neutral-500">
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 py-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          {/* Top Row: Chart (2 cols) + Leaderboard (1 col) */}
+          <div className="lg:col-span-2">
+            <ScoreTimelineChart players={players} timeline={timeline} />
+          </div>
+          <div className="lg:col-span-1 row-span-2 h-full">
+            <Leaderboard players={playerSummaries} />
+          </div>
+
+          {/* Middle Row: Player Summary (Full Width on mobile/tablet, 2 cols on desktop) */}
+          <div className="lg:col-span-2">
+             <PlayerSummaryPanel players={playerSummaries} />
+          </div>
+
+          {/* Bottom Row: Match History (Full Width) */}
+          <div className="md:col-span-2 lg:col-span-3">
+            <MatchHistoryTable matches={matchHistory} />
+          </div>
+        </div>
+      </main>
+      <footer className="max-w-7xl mx-auto px-4 sm:px-6 pb-8 text-xs text-neutral-500 text-center sm:text-left">
         サンプルUI。データはダミー値。Excel/CSV → JSON連携を想定。
       </footer>
     </div>

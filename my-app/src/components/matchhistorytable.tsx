@@ -12,19 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import type { MatchRecord } from "@/types/propsType";
 
-const rankLabel: Record<MatchRecord["rank"], string> = {
-  1: "1位",
-  2: "2位",
-  3: "3位",
-  4: "4位",
-};
 
-const rankChipClass: Record<MatchRecord["rank"], string> = {
-  1: "border-emerald-500/50 bg-emerald-500/10 text-emerald-200",
-  2: "border-sky-500/50 bg-sky-500/10 text-sky-200",
-  3: "border-amber-500/50 bg-amber-500/10 text-amber-200",
-  4: "border-rose-500/50 bg-rose-500/10 text-rose-200",
-};
 
 const nf = new Intl.NumberFormat("ja-JP");
 const pointFormat = new Intl.NumberFormat("ja-JP", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -109,6 +97,7 @@ export function MatchHistoryTable({ matches, title = "対局履歴" }: MatchHist
           <label className="flex flex-col gap-1 text-xs text-neutral-400">
             日付で絞り込み
             <select
+              aria-label="日付で絞り込み"
               className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-emerald-500 focus:outline-none"
               value={selectedDate}
               onChange={(event) => setSelectedDate(event.target.value)}
@@ -125,6 +114,7 @@ export function MatchHistoryTable({ matches, title = "対局履歴" }: MatchHist
           <label className="flex flex-col gap-1 text-xs text-neutral-400">
             プレイヤーで絞り込み
             <select
+              aria-label="プレイヤーで絞り込み"
               className="w-full rounded-md border border-neutral-700 bg-neutral-900 px-3 py-2 text-sm text-neutral-100 focus:border-emerald-500 focus:outline-none"
               value={selectedPlayer}
               onChange={(event) => setSelectedPlayer(event.target.value)}
@@ -146,50 +136,101 @@ export function MatchHistoryTable({ matches, title = "対局履歴" }: MatchHist
             まだ対局データがありません。
           </div>
         ) : (
-          <div className="overflow-x-auto">
-            <Table className="min-w-[640px]">
-              <TableHeader>
-                <TableRow className="text-xs">
-                  <TableHead className="w-20">日付</TableHead>
-                  <TableHead className="w-28">卓</TableHead>
-                  <TableHead className="w-16">着順</TableHead>
-                  <TableHead className="w-32 text-right">素点</TableHead>
-                  <TableHead className="w-24 text-right">ポイント</TableHead>
-                  <TableHead>名前表示</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
-                {filteredMatches.map((match) => (
-                  <TableRow key={`${match.date}-${match.room}-${match.nameplate}`}>
-                    <TableCell className="text-sm text-neutral-300">{formatDate(match.date)}</TableCell>
-                    <TableCell className="text-sm text-neutral-400">{match.room}</TableCell>
-                    <TableCell>
-                      <span
+          <>
+            {/* Desktop Table View */}
+            <div className="hidden md:block overflow-x-auto">
+              <Table className="min-w-[640px]">
+                <TableHeader>
+                  <TableRow className="text-xs border-white/5 hover:bg-transparent">
+                    <TableHead className="w-20 text-neutral-500">日付</TableHead>
+                    <TableHead className="w-28 text-neutral-500">卓</TableHead>
+                    <TableHead className="w-16 text-neutral-500">着順</TableHead>
+                    <TableHead className="w-32 text-right text-neutral-500">素点</TableHead>
+                    <TableHead className="w-24 text-right text-neutral-500">ポイント</TableHead>
+                    <TableHead className="text-neutral-500">名前表示</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredMatches.map((match) => (
+                    <TableRow key={`${match.date}-${match.room}-${match.nameplate}`} className="border-white/5 hover:bg-white/5 transition-colors">
+                      <TableCell className="text-sm text-neutral-300 font-mono">{formatDate(match.date)}</TableCell>
+                      <TableCell className="text-sm text-neutral-400">{match.room}</TableCell>
+                      <TableCell>
+                        <span
+                          className={cn(
+                            "inline-flex items-center justify-center w-6 h-6 rounded-full text-xs font-bold",
+                            match.rank === 1 && "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50",
+                            match.rank === 2 && "bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/50",
+                            match.rank === 3 && "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/50",
+                            match.rank === 4 && "bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50",
+                          )}
+                        >
+                          {match.rank}
+                        </span>
+                      </TableCell>
+                      <TableCell className="text-right font-mono text-sm text-neutral-300">
+                        {nf.format(match.score)}
+                      </TableCell>
+                      <TableCell
                         className={cn(
-                          "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold",
-                          rankChipClass[match.rank],
+                          "text-right font-mono text-sm font-bold",
+                          match.points >= 0 ? "text-emerald-400" : "text-rose-400",
                         )}
                       >
-                        {rankLabel[match.rank]}
+                        {formatPoints(match.points)}
+                      </TableCell>
+                      <TableCell className="text-sm text-neutral-300">{match.nameplate}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </div>
+
+            {/* Mobile Card View */}
+            <div className="md:hidden space-y-3">
+              {filteredMatches.map((match) => (
+                <div 
+                  key={`${match.date}-${match.room}-${match.nameplate}`}
+                  className="p-4 rounded-xl bg-white/5 border border-white/5 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                       <span className="text-xs font-mono text-neutral-400">{formatDate(match.date)}</span>
+                       <span className="text-xs px-1.5 py-0.5 rounded bg-neutral-800 text-neutral-500">{match.room}</span>
+                    </div>
+                    <span className="text-sm font-medium text-neutral-200">{match.nameplate}</span>
+                  </div>
+                  
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span
+                          className={cn(
+                            "flex items-center justify-center w-8 h-8 rounded-full text-sm font-bold",
+                            match.rank === 1 && "bg-emerald-500/20 text-emerald-400 ring-1 ring-emerald-500/50",
+                            match.rank === 2 && "bg-sky-500/20 text-sky-400 ring-1 ring-sky-500/50",
+                            match.rank === 3 && "bg-amber-500/20 text-amber-400 ring-1 ring-amber-500/50",
+                            match.rank === 4 && "bg-rose-500/20 text-rose-400 ring-1 ring-rose-500/50",
+                          )}
+                        >
+                          {match.rank}
                       </span>
-                    </TableCell>
-                    <TableCell className="text-right font-mono text-sm text-neutral-100">
-                      {nf.format(match.score)}
-                    </TableCell>
-                    <TableCell
-                      className={cn(
-                        "text-right font-mono text-sm",
-                        match.points >= 0 ? "text-emerald-300" : "text-rose-300",
-                      )}
-                    >
-                      {formatPoints(match.points)}
-                    </TableCell>
-                    <TableCell className="text-sm text-neutral-300">{match.nameplate}</TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
-            </Table>
-          </div>
+                      <span className="text-sm text-neutral-400 font-mono">
+                        {nf.format(match.score)}
+                      </span>
+                    </div>
+                    <span
+                        className={cn(
+                          "text-lg font-mono font-bold",
+                          match.points >= 0 ? "text-emerald-400" : "text-rose-400",
+                        )}
+                      >
+                        {formatPoints(match.points)}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
         )}
       </CardContent>
     </Card>
