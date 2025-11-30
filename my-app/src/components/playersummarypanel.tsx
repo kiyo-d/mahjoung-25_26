@@ -15,6 +15,8 @@ import type { Payload } from "recharts/types/component/DefaultTooltipContent";
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { PlayerSummaryDetail } from "@/data/player-summary";
+import sectionRings from "@/assets/section-rings.svg";
+import aurora from "@/assets/aurora-bands.svg";
 
 const numberFormat = new Intl.NumberFormat("ja-JP", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
 const percentFormat = new Intl.NumberFormat("ja-JP", { minimumFractionDigits: 1, maximumFractionDigits: 1 });
@@ -91,6 +93,7 @@ type PlayerSummaryPanelProps = {
 
 export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
   const [selectedId, setSelectedId] = useState<PlayerSummaryDetail["id"] | null>(() => players[0]?.id ?? null);
+  const [range, setRange] = useState<"season" | "recent">("season");
 
   const selected = useMemo(() => {
     if (!players.length) return null;
@@ -99,23 +102,49 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
 
   const chartData = useMemo<RankChartDatum[]>(() => {
     if (!selected) return [];
-    return selected.rankHistory.map((entry) => ({
+    const base = selected.rankHistory.map((entry) => ({
       gameNumber: entry.gameNumber,
       date: entry.date,
       dailyIndex: entry.dailyIndex,
       rank: entry.rank,
     }));
-  }, [selected]);
+    if (range === "recent") {
+      return base.slice(-12);
+    }
+    return base;
+  }, [range, selected]);
 
   const histogramData = useMemo<RankHistogramDatum[]>(() => {
     if (!selected) return [];
+
+    if (range === "recent") {
+      const recent = selected.rankHistory
+        .filter((entry) => typeof entry.rank === "number")
+        .slice(-12) as Array<RankChartDatum & { rank: number }>;
+      const counts = recent.reduce(
+        (acc, curr) => {
+          const key = rankLabel[curr.rank] ?? "-";
+          acc[key] = (acc[key] ?? 0) + 1;
+          return acc;
+        },
+        {} as Record<string, number>,
+      );
+
+      return [
+        { rank: "1位", count: counts["1位"] ?? 0 },
+        { rank: "2位", count: counts["2位"] ?? 0 },
+        { rank: "3位", count: counts["3位"] ?? 0 },
+        { rank: "4位", count: counts["4位"] ?? 0 },
+      ];
+    }
+
     return [
       { rank: "1位", count: selected.rankCounts.first },
       { rank: "2位", count: selected.rankCounts.second },
       { rank: "3位", count: selected.rankCounts.third },
       { rank: "4位", count: selected.rankCounts.fourth },
     ];
-  }, [selected]);
+  }, [range, selected]);
 
   const ratioMetrics = useMemo(
     () =>
@@ -175,6 +204,47 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
       boxShadow: `inset 0 1px 0 ${withAlpha("#ffffff", 0.08)}, 0 12px 36px -24px ${withAlpha(selected.color, 0.65)}`,
     };
   }, [selected]);
+
+  const finishedRanks = useMemo(() => {
+    if (!selected) return [] as number[];
+    return selected.rankHistory
+      .filter((entry) => typeof entry.rank === "number")
+      .map((entry) => entry.rank as number);
+  }, [selected]);
+
+  const recentSample = useMemo(() => finishedRanks.slice(-12), [finishedRanks]);
+
+  const recentAverageRank = useMemo(() => {
+    if (!recentSample.length) return null;
+    const total = recentSample.reduce((acc, rank) => acc + rank, 0);
+    return total / recentSample.length;
+  }, [recentSample]);
+
+  const topFinishRate = useMemo(() => {
+    if (!recentSample.length) return null;
+    const topFinishes = recentSample.filter((rank) => rank <= 2).length;
+    return topFinishes / recentSample.length;
+  }, [recentSample]);
+
+  const lastAvoidRate = useMemo(() => {
+    if (!recentSample.length) return null;
+    const safeFinishes = recentSample.filter((rank) => rank !== 4).length;
+    return safeFinishes / recentSample.length;
+  }, [recentSample]);
+
+  const longestTopStreak = useMemo(() => {
+    let best = 0;
+    let current = 0;
+    recentSample.forEach((rank) => {
+      if (rank === 1) {
+        current += 1;
+        best = Math.max(best, current);
+      } else {
+        current = 0;
+      }
+    });
+    return best;
+  }, [recentSample]);
 
   const primaryAccent = useMemo(() => {
     if (!selected) return undefined;
@@ -251,31 +321,49 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
   }, []);
 
   return (
-    <Card className="border-neutral-800 bg-neutral-950/80 text-neutral-100">
-      <CardHeader className="gap-3 pb-4">
-        <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+    <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-neutral-900/80 via-neutral-950/90 to-neutral-950/95 text-neutral-100 shadow-[0_28px_80px_-60px_rgba(16,185,129,0.6)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-32 bg-gradient-to-br from-emerald-400/8 via-cyan-400/10 to-fuchsia-400/12" />
+      <div className="pointer-events-none absolute inset-x-10 top-8 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
+      <div className="pointer-events-none absolute -right-14 -top-14 h-64 w-[520px] opacity-70">
+        <img src={sectionRings} alt="player summary halo" className="h-full w-full object-contain" loading="lazy" />
+      </div>
+      <div className="pointer-events-none absolute -left-10 bottom-0 h-56 w-[520px] opacity-70 mix-blend-screen">
+        <img src={aurora} alt="aurora" className="h-full w-full object-cover" loading="lazy" />
+      </div>
+      <CardHeader className="relative z-10 gap-3 pb-4">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
-            <CardTitle className="text-lg font-semibold text-neutral-50">プレイヤーサマリー</CardTitle>
+            <CardTitle className="flex items-center gap-2 text-lg font-semibold text-neutral-50">
+              プレイヤーサマリー
+              <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-100">profile</span>
+            </CardTitle>
             <p className="text-xs text-neutral-500">シーズン成績をプレイヤー別に比較できます</p>
           </div>
-          <label className="flex flex-col gap-1 text-xs text-neutral-400">
-            プレイヤー選択
-            <select
-              className="w-48 rounded-md border border-neutral-700 bg-neutral-900/80 px-3 py-2 text-sm text-neutral-100 transition focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-400 disabled:cursor-not-allowed"
-              value={selected?.id ?? ""}
-              onChange={(event) => setSelectedId(event.target.value as PlayerSummaryDetail["id"])}
-              disabled={!players.length}
-            >
+          <div className="space-y-2 text-xs text-neutral-400">
+            <div className="flex items-center justify-between gap-2">
+              <span>プレイヤー選択</span>
+              <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[11px] uppercase tracking-[0.28em] text-neutral-300">profiles</span>
+            </div>
+            <div className="flex w-full gap-2 overflow-x-auto rounded-xl border border-white/10 bg-white/5 p-2">
               {players.map((player) => (
-                <option key={player.id} value={player.id}>
+                <button
+                  key={player.id}
+                  type="button"
+                  className={`whitespace-nowrap rounded-lg border px-3 py-2 text-sm font-medium shadow-sm transition hover:-translate-y-[1px] hover:shadow ${
+                    selected?.id === player.id
+                      ? "border-emerald-400/60 bg-emerald-400/15 text-emerald-50"
+                      : "border-white/10 bg-neutral-900/70 text-neutral-200 hover:border-emerald-400/30"
+                  }`}
+                  onClick={() => setSelectedId(player.id)}
+                >
                   {player.name}
-                </option>
+                </button>
               ))}
-            </select>
-          </label>
+            </div>
+          </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-7">
+      <CardContent className="relative z-10 space-y-7">
         {selected ? (
           <>
             <div className="grid gap-4 xl:grid-cols-[3fr_2fr]">
@@ -346,6 +434,42 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
                     </div>
                   </div>
                 ) : null}
+                <div className="relative z-10 mt-6 space-y-3 rounded-2xl border border-white/5 bg-neutral-900/70 p-5">
+                  <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-neutral-500">
+                    <span>直近12戦のコンディション</span>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-1 text-[10px] text-neutral-300">momentum</span>
+                  </div>
+                  <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-white/5 via-transparent to-transparent px-4 py-3 shadow-inner shadow-black/30">
+                      <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-400">平均順位</div>
+                      <div className="mt-2 flex items-end gap-2">
+                        <span className="text-2xl font-semibold text-neutral-50">{recentAverageRank !== null ? numberFormat.format(recentAverageRank) : "-"}</span>
+                        <span className="text-xs text-neutral-500">直近</span>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-emerald-400/5 via-transparent to-transparent px-4 py-3 shadow-inner shadow-black/30">
+                      <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-400">連対率</div>
+                      <div className="mt-2 flex items-end gap-2">
+                        <span className="text-2xl font-semibold text-emerald-200">{topFinishRate !== null ? formatPercent(topFinishRate) : "-"}</span>
+                        <span className="text-xs text-neutral-500">直近</span>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-cyan-400/5 via-transparent to-transparent px-4 py-3 shadow-inner shadow-black/30">
+                      <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-400">ラス回避</div>
+                      <div className="mt-2 flex items-end gap-2">
+                        <span className="text-2xl font-semibold text-cyan-200">{lastAvoidRate !== null ? formatPercent(lastAvoidRate) : "-"}</span>
+                        <span className="text-xs text-neutral-500">直近</span>
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-white/10 bg-gradient-to-br from-fuchsia-400/6 via-transparent to-transparent px-4 py-3 shadow-inner shadow-black/30">
+                      <div className="text-[11px] uppercase tracking-[0.28em] text-neutral-400">トップ連勝</div>
+                      <div className="mt-2 flex items-end gap-2">
+                        <span className="text-2xl font-semibold text-fuchsia-200">{longestTopStreak || "-"}</span>
+                        <span className="text-xs text-neutral-500">連続</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900/80 p-6">
                 <div className="flex items-center justify-between text-xs uppercase tracking-[0.3em] text-neutral-500">
@@ -394,9 +518,35 @@ export function PlayerSummaryPanel({ players }: PlayerSummaryPanelProps) {
             </div>
             <div className="grid gap-4 lg:grid-cols-2">
               <div className="rounded-2xl border border-neutral-800 bg-neutral-900/80 p-6">
-                <div className="mb-4 flex items-center justify-between text-xs uppercase tracking-[0.3em] text-neutral-500">
-                  <span>順位推移</span>
-                  <span>時系列</span>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3 text-xs uppercase tracking-[0.3em] text-neutral-500">
+                  <div className="flex items-center gap-2">
+                    <span>順位推移</span>
+                    <span className="rounded-full border border-white/10 bg-white/5 px-2 py-0.5 text-[10px] tracking-[0.2em] text-neutral-300">{range === "recent" ? "直近12戦" : "シーズン全体"}</span>
+                  </div>
+                  <div className="flex gap-2">
+                    <button
+                      type="button"
+                      className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                        range === "season"
+                          ? "border-emerald-400/50 bg-emerald-400/15 text-emerald-100"
+                          : "border-white/10 bg-white/5 text-neutral-300 hover:border-emerald-300/40"
+                      }`}
+                      onClick={() => setRange("season")}
+                    >
+                      全期間
+                    </button>
+                    <button
+                      type="button"
+                      className={`rounded-full border px-3 py-1 text-[11px] font-semibold transition ${
+                        range === "recent"
+                          ? "border-cyan-400/50 bg-cyan-400/15 text-cyan-100"
+                          : "border-white/10 bg-white/5 text-neutral-300 hover:border-cyan-300/40"
+                      }`}
+                      onClick={() => setRange("recent")}
+                    >
+                      直近12戦
+                    </button>
+                  </div>
                 </div>
                 <div className="h-[260px] w-full">
                   <ResponsiveContainer width="100%" height="100%">

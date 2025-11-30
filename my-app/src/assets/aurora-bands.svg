@@ -1,0 +1,21 @@
+<svg width="720" height="420" viewBox="0 0 720 420" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-hidden="true">
+  <defs>
+    <linearGradient id="auroraGradient" x1="40" y1="60" x2="640" y2="360" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399" stop-opacity="0.6" />
+      <stop offset="0.45" stop-color="#22d3ee" stop-opacity="0.45" />
+      <stop offset="1" stop-color="#a855f7" stop-opacity="0.55" />
+    </linearGradient>
+    <linearGradient id="auroraSecondary" x1="0" y1="140" x2="720" y2="280" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0ea5e9" stop-opacity="0.2" />
+      <stop offset="0.5" stop-color="#10b981" stop-opacity="0.2" />
+      <stop offset="1" stop-color="#f43f5e" stop-opacity="0.15" />
+    </linearGradient>
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%" color-interpolation-filters="sRGB">
+      <feGaussianBlur stdDeviation="16" result="blur" />
+      <feBlend in="SourceGraphic" in2="blur" mode="screen" />
+    </filter>
+  </defs>
+  <path d="M-40 260C120 180 220 170 360 210C500 250 580 240 740 160" stroke="url(#auroraGradient)" stroke-width="48" stroke-linecap="round" filter="url(#glow)" />
+  <path d="M-60 340C100 260 200 250 340 300C480 350 600 340 760 250" stroke="url(#auroraSecondary)" stroke-width="34" stroke-linecap="round" filter="url(#glow)" />
+  <path d="M-30 180C140 140 240 120 360 150C480 180 600 160 760 90" stroke="url(#auroraSecondary)" stroke-width="18" stroke-linecap="round" opacity="0.65" />
+</svg>

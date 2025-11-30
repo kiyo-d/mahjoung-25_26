@@ -1,0 +1,19 @@
+<svg width="72" height="72" viewBox="0 0 72 72" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="grad1" x1="12" y1="10" x2="60" y2="62" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399" />
+      <stop offset="1" stop-color="#22c55e" />
+    </linearGradient>
+    <linearGradient id="glow1" x1="0" y1="12" x2="72" y2="60" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#bbf7d0" stop-opacity="0.3" />
+      <stop offset="1" stop-color="#34d399" stop-opacity="0" />
+    </linearGradient>
+  </defs>
+  <circle cx="36" cy="36" r="30" fill="#052e1b" />
+  <circle cx="36" cy="36" r="28" fill="url(#glow1)" />
+  <circle cx="36" cy="36" r="22" fill="#0f3e27" stroke="url(#grad1)" stroke-width="2" />
+  <path d="M26 44h20l-2 8H28l-2-8Z" fill="url(#grad1)" opacity="0.7" />
+  <path d="M31 46h10l-1.2 4H32.2L31 46Z" fill="#e2fbe8" opacity="0.8" />
+  <path d="M24 29.5c0-6.35 5.2-11.5 11.6-11.5 6.55 0 11.6 4.9 11.6 11.05 0 4.48-2.35 8.06-6.28 10.75L36 43.5l-4.92-3.7C26.35 37.2 24 33.72 24 29.5Z" fill="url(#grad1)" />
+  <path d="M35.2 35.6h2.6V24.4h-3.9l-3.1 2.2 1.5 2.1 2.9-2h0.02V35.6Z" fill="#e8fdf1" />
+</svg>
