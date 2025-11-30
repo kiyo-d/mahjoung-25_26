@@ -1,0 +1,35 @@
+<svg width="240" height="240" viewBox="0 0 240 240" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Mahjong crest</title>
+  <desc id="desc">Stylized mahjong tile with layered gradients and corner studs</desc>
+  <defs>
+    <linearGradient id="tile" x1="32" y1="14" x2="212" y2="226" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0EA5E9" stop-opacity="0.95" />
+      <stop offset="1" stop-color="#22C55E" stop-opacity="0.9" />
+    </linearGradient>
+    <linearGradient id="edge" x1="20" y1="0" x2="220" y2="230" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#0B1220" />
+      <stop offset="1" stop-color="#0F172A" />
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(120 60) rotate(90) scale(140 120)">
+      <stop stop-color="#7DD3FC" stop-opacity="0.7" />
+      <stop offset="1" stop-color="#7C3AED" stop-opacity="0" />
+    </radialGradient>
+  </defs>
+  <rect x="18" y="12" width="204" height="216" rx="28" fill="url(#edge)" />
+  <rect x="28" y="22" width="184" height="196" rx="22" fill="#0B1320" stroke="url(#tile)" stroke-width="3" />
+  <rect x="38" y="32" width="164" height="176" rx="18" fill="#0B1626" stroke="#1F2937" stroke-width="2" />
+  <rect x="44" y="38" width="152" height="164" rx="14" fill="url(#glow)" />
+  <g>
+    <path d="M120 66c-28 0-50 22.4-50 50s22 50 50 50 50-22.4 50-50-22-50-50-50Zm0 16c18.8 0 34 15.2 34 34s-15.2 34-34 34-34-15.2-34-34 15.2-34 34-34Z" fill="#A7F3D0" stroke="#34D399" stroke-width="3" stroke-linejoin="round" />
+    <path d="M120 86c-17.6 0-32 14.4-32 32s14.4 32 32 32 32-14.4 32-32-14.4-32-32-32Zm0 10.5c11.86 0 21.5 9.64 21.5 21.5S131.86 140 120 140s-21.5-9.64-21.5-21.5S108.14 96.5 120 96.5Z" fill="#1E293B" stroke="#67E8F9" stroke-width="2" />
+    <path d="M120 110c-5.5 0-10 4.5-10 10 0 5.6 4.5 10 10 10 5.6 0 10-4.4 10-10 0-5.5-4.4-10-10-10Zm0 6a4 4 0 1 1 0 8 4 4 0 0 1 0-8Z" fill="#ECFEFF" />
+    <path d="M120 75c3.2 8.2 8.6 15.6 15.4 21.3 7.7 6.5 17 10.8 27.1 12.4" stroke="#FDE68A" stroke-width="4" stroke-linecap="round" />
+    <path d="M120 75c-3.2 8.2-8.6 15.6-15.4 21.3-7.7 6.5-17 10.8-27.1 12.4" stroke="#F472B6" stroke-width="4" stroke-linecap="round" />
+    <path d="M120 157c3.2-8.2 8.6-15.6 15.4-21.3 7.7-6.5 17-10.8 27.1-12.4" stroke="#38BDF8" stroke-width="4" stroke-linecap="round" />
+    <path d="M120 157c-3.2-8.2-8.6-15.6-15.4-21.3-7.7-6.5-17-10.8-27.1-12.4" stroke="#A855F7" stroke-width="4" stroke-linecap="round" />
+  </g>
+  <circle cx="62" cy="48" r="6" fill="#22C55E" />
+  <circle cx="62" cy="192" r="6" fill="#22C55E" />
+  <circle cx="178" cy="48" r="6" fill="#22C55E" />
+  <circle cx="178" cy="192" r="6" fill="#22C55E" />
+</svg>

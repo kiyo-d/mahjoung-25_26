@@ -1,5 +1,7 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import sectionRings from "@/assets/section-rings.svg";
+import aurora from "@/assets/aurora-bands.svg";
 import {
   LineChart,
   Line,
@@ -176,6 +178,24 @@ export function ScoreTimelineChart({ timeline, players }:{
     return { scoreHistory, rankHistory, gameIndexByNumber };
   }, [players, timeline]);
 
+  const lastPoint = timeline[timeline.length - 1];
+  const lastGameNumber = lastPoint?.gameNumber ?? 0;
+  const lastGameDate = lastPoint?.date ?? "-";
+  const scoreboard = useMemo(() => {
+    if (!lastPoint) return [] as { id: string; score: number }[];
+    return players
+      .map((player) => ({ id: player.id, score: Number(lastPoint[player.id] ?? 0) }))
+      .sort((a, b) => b.score - a.score);
+  }, [lastPoint, players]);
+  const leadMargin = scoreboard.length >= 2 ? scoreboard[0].score - scoreboard[1].score : 0;
+  const leaderName = scoreboard.length > 0 ? players.find((p) => p.id === scoreboard[0].id)?.name ?? "-" : "-";
+  const topTrend = useMemo(() => {
+    if (scoreboard.length === 0 || derivedStats.scoreHistory.length < 2) return 0;
+    const latest = derivedStats.scoreHistory.at(-1) ?? {};
+    const prev = derivedStats.scoreHistory.at(-2) ?? {};
+    return Number(latest[scoreboard[0].id] ?? 0) - Number(prev[scoreboard[0].id] ?? 0);
+  }, [derivedStats.scoreHistory, scoreboard]);
+
   const renderTooltip = (tooltipProps: ChartTooltipProps) => {
     const { active, payload } = tooltipProps;
     if (!active || !payload || payload.length === 0) return null;
@@ -292,36 +312,105 @@ export function ScoreTimelineChart({ timeline, players }:{
   };
 
   return (
-    <Card className="bg-neutral-900/90 border-neutral-800">
-      <CardHeader className="pb-2"><CardTitle className="flex items-center gap-2 text-neutral-200">シーズンスコア推移</CardTitle></CardHeader>
-      <CardContent>
-        <div className="h-[340px]">
-          <ResponsiveContainer width="100%" height="100%">
-            <LineChart data={timeline} margin={{ top: 10, right: 16, left: 12, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#27272a" />
-              <XAxis
-                dataKey="gameNumber"
-                type="number"
-                domain={xDomain}
-                ticks={xTicks}
-                stroke="#a1a1aa"
-                tick={{ fontSize: 12 }}
-                allowDecimals={false}
-              />
-              <YAxis
-                domain={yScale.domain}
-                ticks={yScale.ticks}
-                stroke="#a1a1aa"
-                tickFormatter={formatScore}
-                tick={{ fontSize: 12 }}
-                allowDecimals
-              />
-              <Tooltip content={renderTooltip} cursor={{ stroke: "#52525b", strokeWidth: 1 }} />
-              {players.map(p => (
-                <Line key={p.id} type="monotone" dataKey={p.id} stroke={p.color} strokeWidth={2.4} dot={false} activeDot={{ r: 5 }} />
-              ))}
-            </LineChart>
-          </ResponsiveContainer>
+    <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-neutral-900/80 via-neutral-950/85 to-neutral-950/95 shadow-[0_28px_80px_-60px_rgba(16,185,129,0.6)]">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-400/5 via-sky-400/8 to-fuchsia-400/6" />
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute -top-16 right-3 h-64 w-64 opacity-70">
+          <img src={sectionRings} alt="section rings" className="h-full w-full object-contain" loading="lazy" />
+        </div>
+        <div className="absolute -left-10 -bottom-6 h-52 w-[520px] opacity-60 mix-blend-screen">
+          <img src={aurora} alt="aurora" className="h-full w-full object-cover" loading="lazy" />
+        </div>
+      </div>
+      <CardHeader className="relative z-10 pb-4">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-neutral-50">
+              シーズンスコア推移
+              <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-100">trend</span>
+            </CardTitle>
+            <p className="mt-1 text-sm text-neutral-400">累計スコアの波と差分を重ねて可視化</p>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-neutral-400">
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+              <span>累計ライン</span>
+            </div>
+            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-sky-400" />
+              <span>ゲーム番号</span>
+            </div>
+          </div>
+        </div>
+        <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-emerald-100">leader</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+              <span className="font-semibold">{leaderName}</span>
+              <span className="font-mono text-emerald-200">{formatScore(scoreboard[0]?.score ?? 0)} pt</span>
+            </div>
+            <p className="text-[11px] text-neutral-500">首位と2位の差 {formatDelta(leadMargin)}</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-sky-100">latest</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+              <span className="font-semibold">{lastGameNumber} 戦目</span>
+              <span className="font-mono text-sky-200">{lastGameDate}</span>
+            </div>
+            <p className="text-[11px] text-neutral-500">更新日付とゲーム通算番号</p>
+          </div>
+          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-100">momentum</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+              <span className="font-semibold">直近増減</span>
+              <span className="font-mono text-fuchsia-200">{formatDelta(topTrend)}</span>
+            </div>
+            <p className="text-[11px] text-neutral-500">前ゲームからのスコア差分</p>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="relative z-10 pt-0">
+        <div className="rounded-2xl border border-white/5 bg-neutral-950/80 p-4 shadow-inner shadow-black/30">
+          <div className="mt-2 h-[380px] w-full rounded-xl bg-gradient-to-br from-white/2 via-white/1 to-white/0">
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={timeline} margin={{ left: 20, right: 10, top: 16, bottom: 16 }}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
+                <XAxis
+                  dataKey="gameNumber"
+                  ticks={xTicks}
+                  domain={xDomain}
+                  tick={{ fill: "#a3a3a3", fontSize: 12 }}
+                  axisLine={{ stroke: "#2f2f2f" }}
+                  tickLine={{ stroke: "#2f2f2f" }}
+                  height={42}
+                  label={{ value: "ゲーム", position: "insideBottom", offset: -8, fill: "#9ca3af", fontSize: 12 }}
+                />
+                <YAxis
+                  domain={yScale.domain}
+                  ticks={yScale.ticks}
+                  tickFormatter={formatScore}
+                  tick={{ fill: "#a3a3a3", fontSize: 12 }}
+                  axisLine={{ stroke: "#2f2f2f" }}
+                  tickLine={{ stroke: "#2f2f2f" }}
+                  width={68}
+                  label={{ value: "スコア", angle: -90, position: "insideLeft", offset: 14, fill: "#9ca3af", fontSize: 12 }}
+                />
+                <Tooltip content={renderTooltip} cursor={{ stroke: "#3b82f6", strokeDasharray: "4 4" }} />
+                {players.map((player) => (
+                  <Line
+                    key={player.id}
+                    type="monotone"
+                    dataKey={player.id}
+                    name={player.name}
+                    stroke={player.color}
+                    strokeWidth={2.6}
+                    dot={false}
+                    activeDot={{ r: 4, fill: player.color }}
+                  />
+                ))}
+              </LineChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       </CardContent>
     </Card>

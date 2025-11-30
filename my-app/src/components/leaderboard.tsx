@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import sectionGrid from "@/assets/section-grid.svg";
+import aurora from "@/assets/aurora-bands.svg";
 import type { PlayerSummaryDetail } from "@/data/player-summary";
 
 type LeaderboardRow = {
@@ -289,14 +291,41 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
   const canvasWidth = hasMeasured ? Math.max(containerWidth, MIN_CANVAS_WIDTH) : 0;
   const isScrollable = hasMeasured && containerWidth < MIN_CANVAS_WIDTH;
 
+  const podium = rows.slice(0, 3);
+
   return (
-    <Card className="bg-neutral-900/60 border-neutral-800">
-      <CardHeader className="pb-2">
-        <CardTitle className="text-neutral-100">リーダーボード</CardTitle>
+    <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-neutral-900/80 via-neutral-950/90 to-neutral-950/95 shadow-[0_22px_70px_-60px_rgba(34,211,238,0.55)]">
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-emerald-400/6 to-fuchsia-400/8" />
+      <div className="pointer-events-none absolute -left-12 -top-10 h-56 w-[620px] opacity-50">
+        <img src={sectionGrid} alt="leaderboard grid" className="h-full w-full object-contain" loading="lazy" />
+      </div>
+      <div className="pointer-events-none absolute -right-16 bottom-0 h-52 w-[460px] opacity-80 mix-blend-screen">
+        <img src={aurora} alt="aurora" className="h-full w-full object-cover" loading="lazy" />
+      </div>
+      <CardHeader className="relative z-10 pb-3">
+        <CardTitle className="flex items-center gap-2 text-xl font-semibold text-neutral-50">
+          リーダーボード
+          <span className="rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100">ranking</span>
+        </CardTitle>
         <p className="text-sm text-neutral-400">最終累計スコアのランキング</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
+          {podium.map((item, index) => (
+            <div
+              key={item.team}
+              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 shadow-inner shadow-black/30"
+            >
+              <p className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">#{item.rank}</p>
+              <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+                <span className="font-semibold">{item.team}</span>
+                <span className="font-mono text-cyan-100">{item.points.toFixed(1)}</span>
+              </div>
+              <p className="text-[11px] text-neutral-500">{index === 0 ? "首位" : index === 1 ? "2位" : "3位"} プレイヤー</p>
+            </div>
+          ))}
+        </div>
       </CardHeader>
-      <CardContent className="pt-4">
-        <div className="relative">
+      <CardContent className="relative z-10 pt-4">
+        <div className="relative rounded-2xl border border-white/5 bg-neutral-950/75 p-3 shadow-inner shadow-black/30">
           <div
             ref={scrollRef}
             className="w-full overflow-x-auto"
@@ -306,13 +335,13 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
                 <LeaderboardCanvas
                   rows={rows}
                   width={canvasWidth}
-                  height={Math.max(360, rows.length * 60 + 120)}
+                  height={Math.max(380, rows.length * 60 + 140)}
                 />
               ) : null}
             </div>
           </div>
           {isScrollable ? (
-            <div className="pointer-events-none absolute inset-y-3 right-0 w-16 bg-gradient-to-l from-neutral-900/90 to-transparent flex flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-300">
+            <div className="pointer-events-none absolute inset-y-3 right-1 w-16 bg-gradient-to-l from-neutral-950/95 to-transparent flex flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-300">
               <span className="rotate-90">Swipe</span>
             </div>
           ) : null}

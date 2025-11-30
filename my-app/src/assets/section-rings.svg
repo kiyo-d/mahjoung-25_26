@@ -1,0 +1,20 @@
+<svg width="720" height="420" viewBox="0 0 720 420" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="ringGradient" x1="120" y1="40" x2="640" y2="380" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#34d399" stop-opacity="0.85"/>
+      <stop offset="0.45" stop-color="#22d3ee" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#a78bfa" stop-opacity="0.15"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(360 200) rotate(90) scale(260 360)">
+      <stop stop-color="#0ea5e9" stop-opacity="0.24"/>
+      <stop offset="1" stop-color="#0ea5e9" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="720" height="420" fill="url(#halo)"/>
+  <path d="M120 210C120 126.157 187.157 59 271 59C354.843 59 422 126.157 422 210C422 293.843 354.843 361 271 361" stroke="url(#ringGradient)" stroke-opacity="0.7" stroke-width="1.8" stroke-linecap="round" stroke-dasharray="6 8"/>
+  <path d="M156 210C156 145.009 208.009 93 273 93C337.991 93 390 145.009 390 210C390 274.991 337.991 327 273 327" stroke="url(#ringGradient)" stroke-width="1.6" stroke-linecap="round"/>
+  <path d="M480 170C480 119.295 521.295 78 572 78C622.705 78 664 119.295 664 170C664 220.705 622.705 262 572 262" stroke="url(#ringGradient)" stroke-opacity="0.6" stroke-width="2.2" stroke-linecap="round" stroke-dasharray="4 10"/>
+  <circle cx="530" cy="132" r="4.5" fill="#34d399" fill-opacity="0.9"/>
+  <circle cx="602" cy="116" r="3.5" fill="#22d3ee" fill-opacity="0.75"/>
+  <circle cx="616" cy="238" r="4" fill="#a78bfa" fill-opacity="0.7"/>
+</svg>
