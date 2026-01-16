@@ -13,8 +13,8 @@ export const SelectTrigger = React.forwardRef<
     ref={ref}
     className={cn(
       "flex h-9 w-full items-center justify-between rounded-md border",
-      "border-neutral-700 bg-neutral-800 px-3 text-sm text-neutral-100",
-      "focus:outline-none focus:ring-0 data-[placeholder]:text-neutral-400",
+      "border-[var(--color-border)] bg-[var(--color-surface)] px-3 text-sm text-[var(--color-text)]",
+      "focus:outline-none focus:ring-2 focus:ring-[var(--color-ring)] data-[placeholder]:text-[var(--color-text-subtle)]",
       className
     )}
     {...props}
@@ -38,8 +38,8 @@ export const SelectContent = React.forwardRef<
       ref={ref}
       position={position}
       className={cn(
-        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-neutral-700",
-        "bg-neutral-900 text-neutral-100 shadow-md",
+        "z-50 min-w-[8rem] overflow-hidden rounded-md border border-[var(--color-border)]",
+        "bg-[var(--color-surface)] text-[var(--color-text)] shadow-[var(--shadow-subtle)]",
         className
       )}
       {...props}
@@ -66,7 +66,7 @@ export const SelectItem = React.forwardRef<
     ref={ref}
     className={cn(
       "relative flex w-full cursor-default select-none items-center rounded-sm px-2 py-1.5 text-sm outline-none",
-      "focus:bg-neutral-800 focus:text-neutral-100 data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
+      "focus:bg-[var(--color-surface-muted)] focus:text-[var(--color-text)] data-[disabled]:pointer-events-none data-[disabled]:opacity-50",
       className
     )}
     {...props}
