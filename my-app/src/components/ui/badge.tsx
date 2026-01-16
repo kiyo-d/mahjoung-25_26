@@ -9,8 +9,8 @@ export const Badge = React.forwardRef<HTMLSpanElement, BadgeProps>(
   ({ className, variant = "default", ...props }, ref) => {
     const styles =
       variant === "outline"
-        ? "border border-neutral-600 bg-transparent text-neutral-200"
-        : "bg-neutral-800 text-neutral-100 border border-neutral-600";
+        ? "border border-[var(--color-border)] bg-transparent text-[var(--color-text-subtle)]"
+        : "border border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-text)]";
     return (
       <span
         ref={ref}

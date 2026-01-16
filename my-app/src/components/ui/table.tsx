@@ -10,7 +10,7 @@ const Table = React.forwardRef<HTMLTableElement, TableElementProps<HTMLTableElem
   return (
     <table
       ref={ref}
-      className={cn("w-full caption-bottom text-sm text-neutral-200", className)}
+      className={cn("w-full caption-bottom text-sm text-[var(--color-text)]", className)}
       {...props}
     />
   );
@@ -18,13 +18,19 @@ const Table = React.forwardRef<HTMLTableElement, TableElementProps<HTMLTableElem
 
 const TableHeader = React.forwardRef<HTMLTableSectionElement, TableElementProps<HTMLTableSectionElement>>(
   function TableHeader({ className, ...props }, ref) {
-    return <thead ref={ref} className={cn("bg-neutral-900/60 text-xs uppercase tracking-wider text-neutral-500", className)} {...props} />;
+    return (
+      <thead
+        ref={ref}
+        className={cn("bg-[var(--color-surface-muted)] text-xs uppercase tracking-wider text-[var(--color-text-subtle)]", className)}
+        {...props}
+      />
+    );
   },
 );
 
 const TableBody = React.forwardRef<HTMLTableSectionElement, TableElementProps<HTMLTableSectionElement>>(
   function TableBody({ className, ...props }, ref) {
-    return <tbody ref={ref} className={cn("divide-y divide-neutral-800/80", className)} {...props} />;
+    return <tbody ref={ref} className={cn("divide-y divide-[var(--color-border)]", className)} {...props} />;
   },
 );
 
@@ -32,14 +38,14 @@ const TableRow = React.forwardRef<HTMLTableRowElement, TableElementProps<HTMLTab
   { className, ...props },
   ref,
 ) {
-  return <tr ref={ref} className={cn("transition hover:bg-neutral-900/70", className)} {...props} />;
+  return <tr ref={ref} className={cn("transition hover:bg-[var(--color-surface-muted)]", className)} {...props} />;
 });
 
 const TableHead = React.forwardRef<HTMLTableCellElement, TableElementProps<HTMLTableCellElement>>(function TableHead(
   { className, ...props },
   ref,
 ) {
-  return <th ref={ref} className={cn("px-4 py-3 text-left font-semibold text-neutral-400", className)} {...props} />;
+  return <th ref={ref} className={cn("px-4 py-3 text-left font-semibold text-[var(--color-text-subtle)]", className)} {...props} />;
 });
 
 const TableCell = React.forwardRef<HTMLTableCellElement, TableElementProps<HTMLTableCellElement>>(function TableCell(

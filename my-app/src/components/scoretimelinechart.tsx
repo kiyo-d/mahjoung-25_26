@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import sectionRings from "@/assets/section-rings.svg";
-import aurora from "@/assets/aurora-bands.svg";
 import {
   LineChart,
   Line,
@@ -213,10 +211,10 @@ export function ScoreTimelineChart({ timeline, players }:{
       : eventDate.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
 
     return (
-      <div className="min-w-[220px] rounded-lg border border-neutral-800 bg-neutral-900/95 p-3 shadow-xl">
-        <div className="text-xs uppercase tracking-wide text-neutral-400">通算 {point.gameNumber} 戦目</div>
-        <div className="text-sm font-medium text-neutral-200">{formattedDate}（{point.hand}）</div>
-        <div className="text-xs text-neutral-400">この日 {point.dailyIndex} 戦目</div>
+      <div className="min-w-[220px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-[var(--shadow-subtle)]">
+        <div className="text-xs uppercase tracking-wide text-[var(--color-text-subtle)]">通算 {point.gameNumber} 戦目</div>
+        <div className="text-sm font-medium text-[var(--color-text)]">{formattedDate}（{point.hand}）</div>
+        <div className="text-xs text-[var(--color-text-subtle)]">この日 {point.dailyIndex} 戦目</div>
         <div className="mt-2 space-y-1">
           {[...payload]
             .sort((a, b) => {
@@ -265,19 +263,19 @@ export function ScoreTimelineChart({ timeline, players }:{
 
             const scoreChangeClass = hasSignificantDelta
               ? scoreDelta! > 0
-                ? "text-emerald-400"
-                : "text-rose-400"
-              : "text-neutral-500";
+                ? "text-emerald-600"
+                : "text-rose-600"
+              : "text-[var(--color-text-subtle)]";
 
             const rankChangeClass =
               rankDiff !== 0
                 ? rankDiff > 0
-                  ? "text-emerald-400"
-                  : "text-rose-400"
-                : "text-neutral-500";
+                  ? "text-emerald-600"
+                  : "text-rose-600"
+                : "text-[var(--color-text-subtle)]";
             return (
               <div key={dataKey} className="flex items-start justify-between gap-3 text-sm">
-                <span className="flex items-center gap-2 text-neutral-300">
+                <span className="flex items-center gap-2 text-[var(--color-text)]">
                   <span
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: entry.color ?? player?.color ?? "#fff" }}
@@ -285,7 +283,7 @@ export function ScoreTimelineChart({ timeline, players }:{
                   <span>{player?.name ?? dataKey}</span>
                 </span>
                 <span className="flex flex-col items-end gap-0.5 text-right">
-                  <span className="font-medium text-neutral-100 tabular-nums">
+                  <span className="font-medium text-[var(--color-text)] tabular-nums">
                     {typeof entry.value === "number"
                       ? formatScore(entry.value)
                       : "-"}
@@ -312,90 +310,83 @@ export function ScoreTimelineChart({ timeline, players }:{
   };
 
   return (
-    <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-neutral-900/80 via-neutral-950/85 to-neutral-950/95 shadow-[0_28px_80px_-60px_rgba(16,185,129,0.6)]">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-emerald-400/5 via-sky-400/8 to-fuchsia-400/6" />
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute -top-16 right-3 h-64 w-64 opacity-70">
-          <img src={sectionRings} alt="section rings" className="h-full w-full object-contain" loading="lazy" />
-        </div>
-        <div className="absolute -left-10 -bottom-6 h-52 w-[520px] opacity-60 mix-blend-screen">
-          <img src={aurora} alt="aurora" className="h-full w-full object-cover" loading="lazy" />
-        </div>
-      </div>
+    <Card className="relative overflow-hidden">
       <CardHeader className="relative z-10 pb-4">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <CardTitle className="flex items-center gap-2 text-xl font-semibold text-neutral-50">
+            <CardTitle className="flex items-center gap-3 text-2xl font-semibold text-[var(--color-text)]">
               シーズンスコア推移
-              <span className="rounded-full border border-emerald-400/40 bg-emerald-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-emerald-100">trend</span>
+              <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
+                trend
+              </span>
             </CardTitle>
-            <p className="mt-1 text-sm text-neutral-400">累計スコアの波と差分を重ねて可視化</p>
+            <p className="mt-1 text-sm text-[var(--color-text-subtle)]">累計スコアの波と差分を重ねて可視化</p>
           </div>
-          <div className="flex items-center gap-3 text-xs text-neutral-400">
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
+          <div className="flex items-center gap-3 text-xs text-[var(--color-text-subtle)]">
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-emerald-500" />
               <span>累計ライン</span>
             </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-sky-400" />
+            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
+              <span className="h-2 w-2 rounded-full bg-sky-500" />
               <span>ゲーム番号</span>
             </div>
           </div>
         </div>
         <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-emerald-100">leader</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">leader</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
               <span className="font-semibold">{leaderName}</span>
-              <span className="font-mono text-emerald-200">{formatScore(scoreboard[0]?.score ?? 0)} pt</span>
+              <span className="font-mono text-[var(--color-text)]">{formatScore(scoreboard[0]?.score ?? 0)} pt</span>
             </div>
-            <p className="text-[11px] text-neutral-500">首位と2位の差 {formatDelta(leadMargin)}</p>
+            <p className="text-[11px] text-[var(--color-text-subtle)]">首位と2位の差 {formatDelta(leadMargin)}</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-sky-100">latest</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">latest</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
               <span className="font-semibold">{lastGameNumber} 戦目</span>
-              <span className="font-mono text-sky-200">{lastGameDate}</span>
+              <span className="font-mono text-[var(--color-text)]">{lastGameDate}</span>
             </div>
-            <p className="text-[11px] text-neutral-500">更新日付とゲーム通算番号</p>
+            <p className="text-[11px] text-[var(--color-text-subtle)]">更新日付とゲーム通算番号</p>
           </div>
-          <div className="rounded-xl border border-white/10 bg-white/5 px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-fuchsia-100">momentum</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
+            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">momentum</p>
+            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
               <span className="font-semibold">直近増減</span>
-              <span className="font-mono text-fuchsia-200">{formatDelta(topTrend)}</span>
+              <span className="font-mono text-[var(--color-text)]">{formatDelta(topTrend)}</span>
             </div>
-            <p className="text-[11px] text-neutral-500">前ゲームからのスコア差分</p>
+            <p className="text-[11px] text-[var(--color-text-subtle)]">前ゲームからのスコア差分</p>
           </div>
         </div>
       </CardHeader>
       <CardContent className="relative z-10 pt-0">
-        <div className="rounded-2xl border border-white/5 bg-neutral-950/80 p-4 shadow-inner shadow-black/30">
-          <div className="mt-2 h-[380px] w-full rounded-xl bg-gradient-to-br from-white/2 via-white/1 to-white/0">
+        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
+          <div className="mt-2 h-[380px] w-full rounded-xl bg-[var(--color-surface)]">
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={timeline} margin={{ left: 20, right: 10, top: 16, bottom: 16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#262626" />
+                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                 <XAxis
                   dataKey="gameNumber"
                   ticks={xTicks}
                   domain={xDomain}
-                  tick={{ fill: "#a3a3a3", fontSize: 12 }}
-                  axisLine={{ stroke: "#2f2f2f" }}
-                  tickLine={{ stroke: "#2f2f2f" }}
+                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
                   height={42}
-                  label={{ value: "ゲーム", position: "insideBottom", offset: -8, fill: "#9ca3af", fontSize: 12 }}
+                  label={{ value: "ゲーム", position: "insideBottom", offset: -8, fill: "#6b7280", fontSize: 12 }}
                 />
                 <YAxis
                   domain={yScale.domain}
                   ticks={yScale.ticks}
                   tickFormatter={formatScore}
-                  tick={{ fill: "#a3a3a3", fontSize: 12 }}
-                  axisLine={{ stroke: "#2f2f2f" }}
-                  tickLine={{ stroke: "#2f2f2f" }}
+                  tick={{ fill: "#6b7280", fontSize: 12 }}
+                  axisLine={{ stroke: "#d1d5db" }}
+                  tickLine={{ stroke: "#d1d5db" }}
                   width={68}
-                  label={{ value: "スコア", angle: -90, position: "insideLeft", offset: 14, fill: "#9ca3af", fontSize: 12 }}
+                  label={{ value: "スコア", angle: -90, position: "insideLeft", offset: 14, fill: "#6b7280", fontSize: 12 }}
                 />
-                <Tooltip content={renderTooltip} cursor={{ stroke: "#3b82f6", strokeDasharray: "4 4" }} />
+                <Tooltip content={renderTooltip} cursor={{ stroke: "#9ca3af", strokeDasharray: "4 4" }} />
                 {players.map((player) => (
                   <Line
                     key={player.id}

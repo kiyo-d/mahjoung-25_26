@@ -1,7 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import sectionGrid from "@/assets/section-grid.svg";
-import aurora from "@/assets/aurora-bands.svg";
 import type { PlayerSummaryDetail } from "@/data/player-summary";
 
 type LeaderboardRow = {
@@ -102,13 +100,13 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       context.save();
       context.translate(padding, padding);
 
-      context.fillStyle = "#fff";
-      context.font = '28px "Yu Gothic UI", Meiryo, sans-serif';
+      context.fillStyle = "#111111";
+      context.font = '26px "Yu Gothic UI", Meiryo, sans-serif';
       context.textBaseline = "top";
       context.fillText("最終累計スコア", 4, -2);
 
       context.font = "14px sans-serif";
-      context.fillStyle = "rgba(255,255,255,0.85)";
+      context.fillStyle = "rgba(17,17,17,0.75)";
       const rightSectionWidth = w - rightX;
       context.textAlign = "left";
       context.fillText("チーム / プレイヤー", 8, 22);
@@ -121,7 +119,7 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
       data.forEach((row, index) => {
         const y = index * rowH + 54;
         if (index % 2 === 1) {
-          context.fillStyle = "rgba(255,255,255,0.03)";
+          context.fillStyle = "rgba(0,0,0,0.03)";
           roundRect(
             context,
             0,
@@ -137,17 +135,7 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
         const barW = Math.min(leftWidth - 24, 360);
         const color = row.color ?? "#6b7280";
 
-        roundRect(
-          context,
-          0,
-          y + barPad / 2,
-          barW - 8,
-          rowH - barPad,
-          6,
-          true,
-          false,
-          "rgba(17,17,17,0.55)",
-        );
+        roundRect(context, 0, y + barPad / 2, barW - 8, rowH - barPad, 6, true, false, "rgba(17,17,17,0.06)");
         context.fillStyle = hexToRgba(color, 0.12);
         roundRect(
           context,
@@ -160,7 +148,7 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
           false,
         );
 
-        context.fillStyle = "rgba(0,0,0,0.55)";
+        context.fillStyle = "rgba(17,17,17,0.08)";
         roundRect(
           context,
           -padding + 6,
@@ -171,36 +159,36 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
           true,
           false,
         );
-        context.fillStyle = "#fff";
+        context.fillStyle = "#111111";
         context.font = "20px sans-serif";
         context.textAlign = "center";
         context.textBaseline = "middle";
         context.fillText(row.rank.toString(), -padding + 26, y + rowH / 2);
 
         context.font = "12px sans-serif";
-        context.fillStyle = "rgba(255,255,255,0.85)";
+        context.fillStyle = "rgba(17,17,17,0.7)";
         context.textAlign = "left";
         context.fillText((row.tag ?? "").toUpperCase(), 8, y + 8);
 
         context.font = 'bold 20px "Yu Gothic UI", Meiryo, sans-serif';
-        context.fillStyle = "rgba(255,255,255,0.95)";
+        context.fillStyle = "rgba(17,17,17,0.95)";
         context.fillText(row.team, 8, y + rowH / 2 - 10);
 
         context.textAlign = "right";
         context.font = '28px "Segoe UI", sans-serif';
-        context.fillStyle = "rgba(255,255,255,0.95)";
+        context.fillStyle = "rgba(17,17,17,0.95)";
         const pointsX = rightX + rightSectionWidth * 0.32 + 40;
         context.fillText(row.points.toFixed(1), pointsX, y + rowH / 2 - 12);
 
         context.font = "16px sans-serif";
-        context.fillStyle = "rgba(255,255,255,0.85)";
+        context.fillStyle = "rgba(17,17,17,0.7)";
         const diffLeaderX = rightX + rightSectionWidth * 0.58 + 16;
         context.fillText(row.diffToLeader, diffLeaderX, y + rowH / 2 - 6);
 
         const diffPrevX = rightX + rightSectionWidth * 0.75 + 16;
         context.fillText(row.diffToPrevious, diffPrevX, y + rowH / 2 - 6);
 
-        context.fillStyle = "rgba(255,255,255,0.85)";
+        context.fillStyle = "rgba(17,17,17,0.7)";
         const gamesX = rightX + rightSectionWidth * 0.92;
         context.fillText(`${row.games} 戦`, gamesX, y + rowH / 2 - 6);
 
@@ -208,7 +196,7 @@ function LeaderboardCanvas({ rows, width = 1200, height = 520 }: LeaderboardCanv
 
       context.restore();
 
-      context.fillStyle = "rgba(255,255,255,0.04)";
+      context.fillStyle = "rgba(0,0,0,0.04)";
       roundRect(context, padding, h - 34, w - padding * 2, 20, 6, true, false);
     }
 
@@ -294,38 +282,35 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
   const podium = rows.slice(0, 3);
 
   return (
-    <Card className="relative overflow-hidden border-white/10 bg-gradient-to-br from-neutral-900/80 via-neutral-950/90 to-neutral-950/95 shadow-[0_22px_70px_-60px_rgba(34,211,238,0.55)]">
-      <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-cyan-400/5 via-emerald-400/6 to-fuchsia-400/8" />
-      <div className="pointer-events-none absolute -left-12 -top-10 h-56 w-[620px] opacity-50">
-        <img src={sectionGrid} alt="leaderboard grid" className="h-full w-full object-contain" loading="lazy" />
-      </div>
-      <div className="pointer-events-none absolute -right-16 bottom-0 h-52 w-[460px] opacity-80 mix-blend-screen">
-        <img src={aurora} alt="aurora" className="h-full w-full object-cover" loading="lazy" />
-      </div>
+    <Card className="relative overflow-hidden">
       <CardHeader className="relative z-10 pb-3">
-        <CardTitle className="flex items-center gap-2 text-xl font-semibold text-neutral-50">
+        <CardTitle className="flex items-center gap-3 text-2xl font-semibold text-[var(--color-text)]">
           リーダーボード
-          <span className="rounded-full border border-cyan-400/40 bg-cyan-400/10 px-2 py-0.5 text-[11px] font-semibold uppercase tracking-[0.3em] text-cyan-100">ranking</span>
+          <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
+            ranking
+          </span>
         </CardTitle>
-        <p className="text-sm text-neutral-400">最終累計スコアのランキング</p>
+        <p className="text-sm text-[var(--color-text-subtle)]">最終累計スコアのランキング</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {podium.map((item, index) => (
             <div
               key={item.team}
-              className="rounded-xl border border-white/10 bg-white/5 px-3 py-2 shadow-inner shadow-black/30"
+              className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2"
             >
-              <p className="text-[11px] uppercase tracking-[0.26em] text-neutral-400">#{item.rank}</p>
-              <div className="mt-1 flex items-center justify-between text-sm text-neutral-100">
+              <p className="text-[11px] uppercase tracking-[0.26em] text-[var(--color-text-subtle)]">#{item.rank}</p>
+              <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
                 <span className="font-semibold">{item.team}</span>
-                <span className="font-mono text-cyan-100">{item.points.toFixed(1)}</span>
+                <span className="font-mono text-[var(--color-text)]">{item.points.toFixed(1)}</span>
               </div>
-              <p className="text-[11px] text-neutral-500">{index === 0 ? "首位" : index === 1 ? "2位" : "3位"} プレイヤー</p>
+              <p className="text-[11px] text-[var(--color-text-subtle)]">
+                {index === 0 ? "首位" : index === 1 ? "2位" : "3位"} プレイヤー
+              </p>
             </div>
           ))}
         </div>
       </CardHeader>
       <CardContent className="relative z-10 pt-4">
-        <div className="relative rounded-2xl border border-white/5 bg-neutral-950/75 p-3 shadow-inner shadow-black/30">
+        <div className="relative rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-3">
           <div
             ref={scrollRef}
             className="w-full overflow-x-auto"
@@ -341,7 +326,7 @@ export function Leaderboard({ players }: { players: PlayerSummaryDetail[] }) {
             </div>
           </div>
           {isScrollable ? (
-            <div className="pointer-events-none absolute inset-y-3 right-1 w-16 bg-gradient-to-l from-neutral-950/95 to-transparent flex flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-neutral-300">
+            <div className="pointer-events-none absolute inset-y-3 right-1 flex w-16 flex-col items-center justify-center text-[10px] font-medium uppercase tracking-[0.3em] text-[var(--color-text-subtle)]">
               <span className="rotate-90">Swipe</span>
             </div>
           ) : null}
