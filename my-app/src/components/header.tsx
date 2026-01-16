@@ -19,7 +19,7 @@ export function HeaderBar({ totalgames, totalplayers, date_start, date_end, gene
   ];
 
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur">
+    <header className="z-30 border-b border-[var(--color-border)] bg-[var(--color-bg)]/90 backdrop-blur">
       <div className="mx-auto max-w-6xl px-6 py-4">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
