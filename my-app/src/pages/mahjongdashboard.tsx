@@ -1,8 +1,10 @@
 import { HeaderBar } from "@/components/header";
 import { MatchHistoryTable } from "@/components/matchhistorytable";
 import { Leaderboard } from "@/components/leaderboard";
+import { HeadToHeadTable } from "@/components/headtoheadtable";
 import { PlayerSummaryPanel } from "@/components/playersummarypanel";
 import { ScoreTimelineChart } from "@/components/scoretimelinechart";
+import { buildHeadToHeadRecords } from "@/data/head-to-head";
 import { buildMatchHistory } from "@/data/match-history";
 import { buildPlayerSummaries } from "@/data/player-summary";
 import { buildChartData } from "@/data/score";
@@ -41,6 +43,7 @@ const headerProps = {
 const { players, timeline } = buildChartData(payload);
 const playerSummaries = buildPlayerSummaries(payload);
 const matchHistory = buildMatchHistory(payload);
+const headToHeadRecords = buildHeadToHeadRecords(payload);
 
 export default function MahjongDashboard() {
   const sortedPlayers = [...playerSummaries].sort((a, b) => b.totalScore - a.totalScore);
@@ -107,6 +110,10 @@ export default function MahjongDashboard() {
 
         <section id="leaderboard" className="space-y-6">
           <Leaderboard players={playerSummaries} />
+        </section>
+
+        <section id="head-to-head" className="space-y-6">
+          <HeadToHeadTable records={headToHeadRecords} />
         </section>
 
         <section id="players" className="space-y-6">
