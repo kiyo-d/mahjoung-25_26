@@ -17,10 +17,16 @@ from mahjong_ai_const.analytics import build_summary
 
 
 def _discover_workbooks(target: Path) -> List[Path]:
-    if target.is_file() and target.suffix.lower() in {".xlsx", ".xlsm", ".xls"}:
+    def is_excel(path: Path) -> bool:
+        if not path.suffix.lower() in {".xlsx", ".xlsm", ".xls"}:
+            return False
+        # Skip temporary/lock files produced by Excel (e.g., ~$foo.xlsx)
+        return not path.name.startswith("~$")
+
+    if target.is_file() and is_excel(target):
         return [target]
     if target.is_dir():
-        return sorted(p for p in target.glob("*.xls*") if p.is_file())
+        return sorted(p for p in target.glob("*.xls*") if p.is_file() and is_excel(p))
     return []
 
 

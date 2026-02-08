@@ -1,53 +1,53 @@
 {
-  "generated_at": "2026-01-16T03:56:06.899682+00:00",
+  "generated_at": "2026-02-08T13:44:19.057717+00:00",
   "source": "data",
   "seasons": [
     {
       "summary": {
         "season": "2025-26",
         "workbook": "理物麻雀_2025_26.xlsx",
-        "total_games": 162,
+        "total_games": 193,
         "total_players": 6,
         "start_date": "2025-10-01",
-        "end_date": "2026-01-14"
+        "end_date": "2026-01-27"
       },
       "players": [
         {
           "rank": 1,
           "name": "きよ",
-          "games_played": 161,
-          "total_score": 1747.2,
-          "average_score": 10.852173913043478,
-          "average_rank": 2.260869565217391,
-          "win_rate": 0.33540372670807456,
-          "top_rate": 0.6086956521739131,
-          "last_rate": 0.20496894409937888,
+          "games_played": 192,
+          "total_score": 1560.6,
+          "average_score": 8.128124999999999,
+          "average_rank": 2.3177083333333335,
+          "win_rate": 0.3072916666666667,
+          "top_rate": 0.5833333333333334,
+          "last_rate": 0.20833333333333334,
           "best_score": 111.6,
-          "worst_score": -75.6,
+          "worst_score": -75.9,
           "rank_counts": {
-            "first": 54,
-            "second": 44,
-            "third": 30,
-            "fourth": 33
+            "first": 59,
+            "second": 53,
+            "third": 40,
+            "fourth": 40
           }
         },
         {
           "rank": 2,
-          "name": "やまだ",
-          "games_played": 161,
-          "total_score": 51.60000000000001,
-          "average_score": 0.32049689440993795,
-          "average_rank": 2.4906832298136647,
-          "win_rate": 0.2484472049689441,
-          "top_rate": 0.515527950310559,
-          "last_rate": 0.2546583850931677,
-          "best_score": 126.9,
-          "worst_score": -83.4,
+          "name": "れい",
+          "games_played": 63,
+          "total_score": 346.59999999999997,
+          "average_score": 5.501587301587301,
+          "average_rank": 2.380952380952381,
+          "win_rate": 0.2698412698412698,
+          "top_rate": 0.5396825396825397,
+          "last_rate": 0.19047619047619047,
+          "best_score": 90.9,
+          "worst_score": -86.7,
           "rank_counts": {
-            "first": 40,
-            "second": 43,
-            "third": 37,
-            "fourth": 41
+            "first": 17,
+            "second": 17,
+            "third": 17,
+            "fourth": 12
           }
         },
         {
@@ -71,59 +71,59 @@
         },
         {
           "rank": 4,
-          "name": "れい",
-          "games_played": 50,
-          "total_score": -4.40000000000002,
-          "average_score": -0.0880000000000004,
-          "average_rank": 2.52,
-          "win_rate": 0.22,
-          "top_rate": 0.46,
-          "last_rate": 0.2,
-          "best_score": 90.9,
-          "worst_score": -86.7,
+          "name": "こたろー",
+          "games_played": 169,
+          "total_score": -0.6999999999999886,
+          "average_score": -0.004142011834319459,
+          "average_rank": 2.473372781065089,
+          "win_rate": 0.26627218934911245,
+          "top_rate": 0.48520710059171596,
+          "last_rate": 0.22485207100591717,
+          "best_score": 106.3,
+          "worst_score": -94.9,
           "rank_counts": {
-            "first": 11,
-            "second": 12,
-            "third": 17,
-            "fourth": 10
+            "first": 45,
+            "second": 37,
+            "third": 49,
+            "fourth": 38
           }
         },
         {
           "rank": 5,
-          "name": "こたろー",
-          "games_played": 147,
-          "total_score": -53.89999999999998,
-          "average_score": -0.36666666666666653,
-          "average_rank": 2.4829931972789114,
-          "win_rate": 0.2585034013605442,
-          "top_rate": 0.48299319727891155,
-          "last_rate": 0.22448979591836735,
-          "best_score": 106.3,
-          "worst_score": -94.9,
+          "name": "やまだ",
+          "games_played": 192,
+          "total_score": -472.8,
+          "average_score": -2.4625,
+          "average_rank": 2.5625,
+          "win_rate": 0.22916666666666666,
+          "top_rate": 0.4791666666666667,
+          "last_rate": 0.2708333333333333,
+          "best_score": 126.9,
+          "worst_score": -83.4,
           "rank_counts": {
-            "first": 38,
-            "second": 33,
-            "third": 43,
-            "fourth": 33
+            "first": 44,
+            "second": 48,
+            "third": 48,
+            "fourth": 52
           }
         },
         {
           "rank": 6,
           "name": "よしたに",
-          "games_played": 118,
-          "total_score": -1793.5,
-          "average_score": -15.19915254237288,
-          "average_rank": 2.847457627118644,
-          "win_rate": 0.13559322033898305,
-          "top_rate": 0.3728813559322034,
-          "last_rate": 0.3559322033898305,
-          "best_score": 87.2,
+          "games_played": 145,
+          "total_score": -1490.7,
+          "average_score": -10.280689655172415,
+          "average_rank": 2.7379310344827585,
+          "win_rate": 0.1724137931034483,
+          "top_rate": 0.4206896551724138,
+          "last_rate": 0.3310344827586207,
+          "best_score": 97.7,
           "worst_score": -84.0,
           "rank_counts": {
-            "first": 16,
-            "second": 28,
-            "third": 32,
-            "fourth": 42
+            "first": 25,
+            "second": 36,
+            "third": 36,
+            "fourth": 48
           }
         }
       ],
@@ -4663,6 +4663,1132 @@
           ],
           "winner": "れい",
           "total_points": 0.0
+        },
+        {
+          "game_index": 162,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 70.9,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 8.0,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -28.1,
+              "rank": 3
+            },
+            {
+              "name": "れい",
+              "score": -50.8,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 163,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 65.1,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 19.5,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -17.4,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -67.2,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": -1.4210854715202004e-14
+        },
+        {
+          "game_index": 164,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "れい",
+              "score": 67.4,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 1.3,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -23.7,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -45.0,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 165,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 57.8,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 16.1,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -26.7,
+              "rank": 3
+            },
+            {
+              "name": "れい",
+              "score": -47.2,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 166,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "れい",
+              "score": 77.8,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 35.9,
+              "rank": 2
+            },
+            {
+              "name": "よしたに",
+              "score": -37.8,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -75.9,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": -1.4210854715202004e-14
+        },
+        {
+          "game_index": 167,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 72.6,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 7.9,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -17.2,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -63.3,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 168,
+          "date": "2026-01-20",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 61.9,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 10.0,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -25.2,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -46.7,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 169,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 72.1,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 10.1,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -25.1,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -57.1,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": -1.4210854715202004e-14
+        },
+        {
+          "game_index": 170,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 72.0,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 9.1,
+              "rank": 2
+            },
+            {
+              "name": "よしたに",
+              "score": -28.5,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -52.6,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 171,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 65.4,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 15.6,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -15.5,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -65.5,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 172,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 71.0,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 14.7,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -15.9,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -69.8,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 173,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 67.3,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 13.5,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -26.2,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -54.6,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 174,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 64.7,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 12.0,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -27.0,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -49.7,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 175,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 89.5,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 0.7,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -34.5,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -55.7,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 176,
+          "date": "2026-01-21",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 62.3,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 7.9,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -19.9,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -50.3,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 177,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "れい",
+              "score": 62.1,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 6.5,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -15.5,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -53.1,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 178,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "れい",
+              "score": 73.0,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 2.0,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -22.0,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -53.0,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 179,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 68.3,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 9.2,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -22.8,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -54.7,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 180,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "れい",
+              "score": 61.4,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 4.9,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -19.2,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -47.1,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 181,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "れい",
+              "score": 53.8,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 9.3,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -15.1,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -48.0,
+              "rank": 4
+            }
+          ],
+          "winner": "れい",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 182,
+          "date": "2026-01-22",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 56.4,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 6.9,
+              "rank": 2
+            },
+            {
+              "name": "よしたに",
+              "score": -13.2,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -50.1,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": -7.105427357601002e-15
+        },
+        {
+          "game_index": 183,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 69.2,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 8.7,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -17.1,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -60.8,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 184,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 97.7,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 12.3,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -33.6,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -77.4,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": -1.0
+        },
+        {
+          "game_index": 185,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 57.8,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 13.0,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -17.3,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -53.5,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 186,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 63.6,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 12.5,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -24.3,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -53.8,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": -2.0
+        },
+        {
+          "game_index": 187,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "よしたに",
+              "score": 77.7,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 10.0,
+              "rank": 2
+            },
+            {
+              "name": "こたろー",
+              "score": -23.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -64.7,
+              "rank": 4
+            }
+          ],
+          "winner": "よしたに",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 188,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 55.4,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 12.6,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -11.7,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -56.3,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 0.0
+        },
+        {
+          "game_index": 189,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 62.8,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 21.1,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -30.0,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -53.9,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 7.105427357601002e-15
+        },
+        {
+          "game_index": 190,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 85.3,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 8.1,
+              "rank": 2
+            },
+            {
+              "name": "やまだ",
+              "score": -23.5,
+              "rank": 3
+            },
+            {
+              "name": "よしたに",
+              "score": -69.9,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": -1.4210854715202004e-14
+        },
+        {
+          "game_index": 191,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 65.1,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 6.0,
+              "rank": 2
+            },
+            {
+              "name": "よしたに",
+              "score": -22.2,
+              "rank": 3
+            },
+            {
+              "name": "きよ",
+              "score": -49.9,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": -1.000000000000007
+        },
+        {
+          "game_index": 192,
+          "date": "2026-01-27",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 68.9,
+              "rank": 1
+            },
+            {
+              "name": "よしたに",
+              "score": 14.9,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -13.4,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -70.4,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 0.0
+        }
+      ]
+    },
+    {
+      "summary": {
+        "season": "2026",
+        "workbook": "理物麻雀_2026 .xlsx",
+        "total_games": 6,
+        "total_players": 4,
+        "start_date": "2026-02-04",
+        "end_date": "2026-02-04"
+      },
+      "players": [
+        {
+          "rank": 1,
+          "name": "きよ",
+          "games_played": 6,
+          "total_score": 186.7,
+          "average_score": 31.116666666666664,
+          "average_rank": 1.6666666666666667,
+          "win_rate": 0.5,
+          "top_rate": 0.8333333333333334,
+          "last_rate": 0.0,
+          "best_score": 65.0,
+          "worst_score": -25.4,
+          "rank_counts": {
+            "first": 3,
+            "second": 2,
+            "third": 1,
+            "fourth": 0
+          }
+        },
+        {
+          "rank": 2,
+          "name": "こたろー",
+          "games_played": 6,
+          "total_score": 23.700000000000003,
+          "average_score": 3.9500000000000006,
+          "average_rank": 2.3333333333333335,
+          "win_rate": 0.3333333333333333,
+          "top_rate": 0.6666666666666666,
+          "last_rate": 0.3333333333333333,
+          "best_score": 54.1,
+          "worst_score": -51.7,
+          "rank_counts": {
+            "first": 2,
+            "second": 2,
+            "third": 0,
+            "fourth": 2
+          }
+        },
+        {
+          "rank": 3,
+          "name": "れい",
+          "games_played": 6,
+          "total_score": 0.0,
+          "average_score": 0.0,
+          "average_rank": 2.8333333333333335,
+          "win_rate": 0.0,
+          "top_rate": 0.16666666666666666,
+          "last_rate": 0.0,
+          "best_score": 0.0,
+          "worst_score": 0.0,
+          "rank_counts": {
+            "first": 0,
+            "second": 1,
+            "third": 5,
+            "fourth": 0
+          }
+        },
+        {
+          "rank": 4,
+          "name": "やまだ",
+          "games_played": 6,
+          "total_score": -61.4,
+          "average_score": -10.233333333333333,
+          "average_rank": 3.1666666666666665,
+          "win_rate": 0.16666666666666666,
+          "top_rate": 0.3333333333333333,
+          "last_rate": 0.6666666666666666,
+          "best_score": 64.7,
+          "worst_score": -51.9,
+          "rank_counts": {
+            "first": 1,
+            "second": 1,
+            "third": 0,
+            "fourth": 4
+          }
+        }
+      ],
+      "history": [
+        {
+          "game_index": 0,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "やまだ",
+              "score": 64.7,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 22.3,
+              "rank": 2
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -16.2,
+              "rank": 4
+            }
+          ],
+          "winner": "やまだ",
+          "total_points": 70.8
+        },
+        {
+          "game_index": 1,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 0.8,
+              "rank": 1
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 2
+            },
+            {
+              "name": "きよ",
+              "score": -25.4,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -51.5,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": -76.1
+        },
+        {
+          "game_index": 2,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 56.9,
+              "rank": 1
+            },
+            {
+              "name": "やまだ",
+              "score": 8.4,
+              "rank": 2
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 3
+            },
+            {
+              "name": "こたろー",
+              "score": -51.7,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 13.599999999999994
+        },
+        {
+          "game_index": 3,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 54.3,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 12.6,
+              "rank": 2
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -20.0,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 46.89999999999999
+        },
+        {
+          "game_index": 4,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "こたろー",
+              "score": 54.1,
+              "rank": 1
+            },
+            {
+              "name": "きよ",
+              "score": 13.6,
+              "rank": 2
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -51.9,
+              "rank": 4
+            }
+          ],
+          "winner": "こたろー",
+          "total_points": 15.800000000000004
+        },
+        {
+          "game_index": 5,
+          "date": "2026-02-04",
+          "players": [
+            {
+              "name": "きよ",
+              "score": 65.0,
+              "rank": 1
+            },
+            {
+              "name": "こたろー",
+              "score": 24.1,
+              "rank": 2
+            },
+            {
+              "name": "れい",
+              "score": 0.0,
+              "rank": 3
+            },
+            {
+              "name": "やまだ",
+              "score": -11.1,
+              "rank": 4
+            }
+          ],
+          "winner": "きよ",
+          "total_points": 78.0
         }
       ]
     }

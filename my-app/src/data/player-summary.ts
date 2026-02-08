@@ -1,5 +1,5 @@
 import { ID_COLOR, NAME_TO_ID, PLAYER_ORDER } from "@/lib/player-mappings";
-import type { PlayerId, SeasonPayload } from "@/types/propsType";
+import type { PlayerId, Season } from "@/types/propsType";
 
 export type PlayerSummaryDetail = {
   id: PlayerId;
@@ -19,8 +19,7 @@ export type PlayerSummaryDetail = {
   rankHistory: Array<{ gameNumber: number; date: string; dailyIndex: number; rank: number | null }>;
 };
 
-export function buildPlayerSummaries(payload: SeasonPayload): PlayerSummaryDetail[] {
-  const season = payload.seasons?.[0];
+export function buildPlayerSummaries(season: Season | undefined): PlayerSummaryDetail[] {
   if (!season) return [];
 
   const perDateCount = new Map<string, number>();

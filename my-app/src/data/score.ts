@@ -1,5 +1,5 @@
 import { ID_COLOR, NAME_TO_ID, PLAYER_ORDER } from "@/lib/player-mappings";
-import type { SeasonPayload, Player, PlayerId, TimelinePoint } from "@/types/propsType";
+import type { Season, Player, PlayerId, TimelinePoint } from "@/types/propsType";
 
 // "YYYY-MM-DD" → "MM/DD"
 function fmtMD(date: string): string {
@@ -19,11 +19,10 @@ function roundToTenth(value: number): number {
  *  - handは "MM/DD-n戦目"（同日内通番 n は1始まり）
  *  - 未参加は前回値を水平維持（carry-forward）
  */
-export function buildChartData(payload: SeasonPayload): {
+export function buildChartData(season: Season | undefined): {
   players: Player[];
   timeline: TimelinePoint[];
 } {
-  const season = payload.seasons?.[0];
   if (!season) return { players: [], timeline: [] };
 
   // 1) Player配列を作成（名前→ID変換、色付与）

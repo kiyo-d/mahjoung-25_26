@@ -1,14 +1,16 @@
-import { HeaderBar } from "@/components/header";
-import { MatchHistoryTable } from "@/components/matchhistorytable";
-import { Leaderboard } from "@/components/leaderboard";
+import { useMemo, useState } from "react";
+
 import { HeadToHeadTable } from "@/components/headtoheadtable";
+import { HeaderBar } from "@/components/header";
+import { Leaderboard } from "@/components/leaderboard";
+import { MatchHistoryTable } from "@/components/matchhistorytable";
 import { PlayerSummaryPanel } from "@/components/playersummarypanel";
 import { ScoreTimelineChart } from "@/components/scoretimelinechart";
 import { buildHeadToHeadRecords } from "@/data/head-to-head";
 import { buildMatchHistory } from "@/data/match-history";
 import { buildPlayerSummaries } from "@/data/player-summary";
 import { buildChartData } from "@/data/score";
-import type { SeasonPayload } from "@/types/propsType";
+import type { Season, SeasonPayload } from "@/types/propsType";
 
 import summary from "@dist/data/summary.json";
 
@@ -28,24 +30,23 @@ function formatGeneratedAt(iso?: string): string {
   });
 }
 
-const season = payload.seasons?.[0];
-const seasonSummary = season?.summary;
-const generatedAt = formatGeneratedAt(payload.generated_at);
-
-const headerProps = {
-  totalgames: seasonSummary?.total_games ?? 0,
-  totalplayers: seasonSummary?.total_players ?? 0,
-  date_start: seasonSummary?.start_date ?? "-",
-  date_end: seasonSummary?.end_date ?? "-",
-  generated_at: generatedAt,
-};
-
-const { players, timeline } = buildChartData(payload);
-const playerSummaries = buildPlayerSummaries(payload);
-const matchHistory = buildMatchHistory(payload);
-const headToHeadRecords = buildHeadToHeadRecords(payload);
+const seasonOptions = payload.seasons?.map((s, idx) => ({
+  label: s.summary?.season ?? `Season ${idx + 1}`,
+  value: idx,
+})) ?? [];
 
 export default function MahjongDashboard() {
+  const [seasonIndex, setSeasonIndex] = useState(0);
+
+  const season: Season | undefined = payload.seasons?.[seasonIndex];
+  const seasonSummary = season?.summary;
+  const generatedAt = formatGeneratedAt(payload.generated_at);
+
+  const { players, timeline } = useMemo(() => buildChartData(season), [season]);
+  const playerSummaries = useMemo(() => buildPlayerSummaries(season), [season]);
+  const matchHistory = useMemo(() => buildMatchHistory(season), [season]);
+  const headToHeadRecords = useMemo(() => buildHeadToHeadRecords(season), [season]);
+
   const sortedPlayers = [...playerSummaries].sort((a, b) => b.totalScore - a.totalScore);
   const hasPlayers = sortedPlayers.length > 0;
   const leader = hasPlayers ? sortedPlayers[0] : null;
@@ -58,7 +59,17 @@ export default function MahjongDashboard() {
 
   return (
     <div className="min-h-screen w-full bg-[var(--color-bg)] text-[var(--color-text)]">
-      <HeaderBar {...headerProps} />
+      <HeaderBar
+        totalgames={seasonSummary?.total_games ?? 0}
+        totalplayers={seasonSummary?.total_players ?? 0}
+        date_start={seasonSummary?.start_date ?? "-"}
+        date_end={seasonSummary?.end_date ?? "-"}
+        generated_at={generatedAt}
+        seasonLabel={seasonSummary?.season ?? "-"}
+        seasonOptions={seasonOptions.map((opt) => opt.label)}
+        selectedSeasonIndex={seasonIndex}
+        onSelectSeason={setSeasonIndex}
+      />
       <main className="mx-auto max-w-6xl space-y-14 px-6 py-12">
         <section id="overview" className="space-y-6">
           <div className="grid gap-4 md:grid-cols-3">
@@ -66,40 +77,40 @@ export default function MahjongDashboard() {
               <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">leader</p>
               <div className="mt-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">最終首位</p>
+                  <p className="text-sm text-[var(--color-text-subtle)]">総合トップ</p>
                   <p className="text-2xl font-semibold text-[var(--color-text)]">{leader?.name ?? "-"}</p>
                 </div>
                 <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
                   {leader?.totalScore.toFixed(1)} pt
                 </span>
               </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">総合スコアで並び替えたトッププレイヤー</p>
+              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">累計ポイントが最も高いプレイヤー</p>
             </div>
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
               <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">endurance</p>
               <div className="mt-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">最多出場</p>
+                  <p className="text-sm text-[var(--color-text-subtle)]">最多対局</p>
                   <p className="text-2xl font-semibold text-[var(--color-text)]">{mostGames?.name ?? "-"}</p>
                 </div>
                 <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
-                  {mostGames?.gamesPlayed ?? 0} 戦
+                  {mostGames?.gamesPlayed ?? 0} 局
                 </span>
               </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">シーズンの場数が最も多いプレイヤー</p>
+              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">最も多く対局したプレイヤー</p>
             </div>
             <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
               <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">momentum</p>
               <div className="mt-3 flex items-center justify-between">
                 <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">トップ率が高い</p>
+                  <p className="text-sm text-[var(--color-text-subtle)]">最高トップ率</p>
                   <p className="text-2xl font-semibold text-[var(--color-text)]">{bestWinRate?.name ?? "-"}</p>
                 </div>
                 <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
                   {((bestWinRate?.winRate ?? 0) * 100).toFixed(1)}%
                 </span>
               </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">トップ率で勢いのあるプレイヤーを表示</p>
+              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">トップ率が最も高いプレイヤー</p>
             </div>
           </div>
         </section>
@@ -125,7 +136,7 @@ export default function MahjongDashboard() {
         </section>
       </main>
       <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-[var(--color-text-subtle)]">
-        サンプルUI。データはダミー値。Excel/CSV → JSON連携を想定。
+        データはExcel/CSVから生成したJSONをもとに表示しています。
       </footer>
     </div>
   );

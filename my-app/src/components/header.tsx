@@ -4,13 +4,29 @@ import { useState } from "react";
 
 import crest from "@/assets/mahjong-emblem.svg";
 
-export function HeaderBar({ totalgames, totalplayers, date_start, date_end, generated_at }: {
+type HeaderBarProps = {
   totalgames: number;
   totalplayers: number;
   date_start: string;
   date_end: string;
   generated_at: string;
-}) {
+  seasonLabel: string;
+  seasonOptions?: string[];
+  selectedSeasonIndex?: number;
+  onSelectSeason?: (index: number) => void;
+};
+
+export function HeaderBar({
+  totalgames,
+  totalplayers,
+  date_start,
+  date_end,
+  generated_at,
+  seasonLabel,
+  seasonOptions = [],
+  selectedSeasonIndex = 0,
+  onSelectSeason,
+}: HeaderBarProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const navItems = [
     { label: "サマリー", href: "#overview" },
@@ -28,9 +44,23 @@ export function HeaderBar({ totalgames, totalplayers, date_start, date_end, gene
             </div>
             <div>
               <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">mahjong analytics</p>
-              <div className="flex flex-wrap items-baseline gap-2">
-                <span className="text-2xl font-semibold tracking-tight text-[var(--color-text)]">2025-26</span>
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-2xl font-semibold tracking-tight text-[var(--color-text)]">{seasonLabel}</span>
                 <span className="text-sm text-[var(--color-text-subtle)]">Season Report</span>
+                {seasonOptions.length > 1 ? (
+                  <select
+                    value={selectedSeasonIndex}
+                    onChange={(e) => onSelectSeason?.(Number(e.target.value))}
+                    className="ml-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1 text-xs font-semibold text-[var(--color-text)] focus:outline-none"
+                    aria-label="シーズン切り替え"
+                  >
+                    {seasonOptions.map((label, idx) => (
+                      <option key={label} value={idx}>
+                        {label}
+                      </option>
+                    ))}
+                  </select>
+                ) : null}
               </div>
             </div>
           </div>

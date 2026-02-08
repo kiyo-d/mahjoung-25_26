@@ -98,7 +98,12 @@ def _to_long_game_records(
     score_values = data[score_cols]
     non_na_counts = score_values.notna().sum(axis=1)
     non_zero_sums = score_values.abs().sum(axis=1)
-    mask = (non_na_counts >= active_player_count) & (non_zero_sums > 0)
+    non_zero_counts = (score_values.abs() > 1e-9).sum(axis=1)
+    mask = (
+        (non_na_counts >= active_player_count)
+        & (non_zero_sums > 0)
+        & (non_zero_counts >= active_player_count)
+    )
 
     filtered = data.loc[mask].copy()
     games = filtered.reset_index(drop=True)
@@ -168,7 +173,7 @@ def _to_long_game_records(
     games = games.loc[valid_mask].reset_index(drop=True)
     games["game_index"] = games.index
 
-    games.loc[:, score_cols] = score_frame
+    games.loc[:, score_cols] = score_frame.astype(float)
     rank_frame = score_frame.rank(axis=1, method="min", ascending=False)
 
     records: List[pd.DataFrame] = []
@@ -229,13 +234,16 @@ def _compute_player_stats(records: pd.DataFrame) -> pd.DataFrame:
 
 
 def _infer_season_label(workbook: Path) -> str:
-    stem = workbook.stem
+    stem = workbook.stem.strip()
     import re
 
-    match = re.search(r"(\d{4})[_-]?(\d{2})", stem)
+    # Accept patterns like 2025_26, 2025-26, or just 2026
+    match = re.search(r"(\d{4})(?:[_-]?(\d{2}))?", stem)
     if match:
         start, end = match.groups()
-        return f"{start}-{end}"
+        if end:
+            return f"{start}-{end}"
+        return start
     return stem
 
 

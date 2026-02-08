@@ -1,4 +1,4 @@
-import type { SeasonPayload } from "@/types/propsType";
+import type { Season } from "@/types/propsType";
 
 type PlayerScore = {
   name: string;
@@ -47,8 +47,7 @@ function toScore(value: number | undefined): number | null {
   return value;
 }
 
-export function buildHeadToHeadRecords(payload: SeasonPayload): HeadToHeadRecord[] {
-  const season = payload.seasons?.[0];
+export function buildHeadToHeadRecords(season: Season | undefined): HeadToHeadRecord[] {
   if (!season || !Array.isArray(season.history)) {
     return [];
   }

@@ -1,4 +1,4 @@
-import type { MatchRecord, SeasonPayload } from "@/types/propsType";
+import type { MatchRecord, Season } from "@/types/propsType";
 
 const BASE_SCORE = 30000;
 const RANK_BONUS: Record<MatchRecord["rank"], number> = {
@@ -58,8 +58,7 @@ function buildRoomLabel(gameNumber: number, date: string, dailyIndex: number): s
   return `${prefix} (${dateLabel}-${dailyIndex}戦目)`;
 }
 
-export function buildMatchHistory(payload: SeasonPayload): MatchRecord[] {
-  const season = payload.seasons?.[0];
+export function buildMatchHistory(season: Season | undefined): MatchRecord[] {
   if (!season || !Array.isArray(season.history)) {
     return [];
   }
