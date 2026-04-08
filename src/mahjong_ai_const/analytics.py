@@ -121,12 +121,17 @@ def _to_long_game_records(
             rank_value = games.at[idx, rank_col]
             if pd.isna(rank_value):
                 continue
+            score_value = row_scores[score_col]
+            if pd.isna(score_value) or abs(float(score_value)) <= 1e-9:
+                # Some sheets keep rank formulas for non-participants.
+                # Treat zero-score rows as non-participating for candidate selection.
+                continue
             try:
                 rank_float = float(rank_value)
             except (TypeError, ValueError):
                 continue
             if 1 <= rank_float <= active_player_count:
-                ranked_candidates.append((score_col, rank_float, abs(row_scores[score_col])))
+                ranked_candidates.append((score_col, rank_float, abs(float(score_value))))
         if ranked_candidates:
             ranked_candidates.sort(key=lambda item: (item[1], -item[2], score_col_order[item[0]]))
             for score_col, _, _ in ranked_candidates:

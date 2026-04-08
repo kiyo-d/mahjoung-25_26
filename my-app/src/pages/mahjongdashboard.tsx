@@ -16,6 +16,25 @@ import summary from "@dist/data/summary.json";
 
 const payload = summary as unknown as SeasonPayload;
 
+function resolveLatestSeasonIndex(seasons: Season[] | undefined): number {
+  if (!seasons || seasons.length === 0) return 0;
+
+  let latestIndex = 0;
+  let latestTime = Number.NEGATIVE_INFINITY;
+
+  seasons.forEach((season, index) => {
+    const dateText = season.summary?.end_date ?? "";
+    const parsed = Date.parse(dateText);
+    const score = Number.isNaN(parsed) ? Number.NEGATIVE_INFINITY : parsed;
+    if (score >= latestTime) {
+      latestTime = score;
+      latestIndex = index;
+    }
+  });
+
+  return latestIndex;
+}
+
 function formatGeneratedAt(iso?: string): string {
   if (!iso) return "-";
   const date = new Date(iso);
@@ -36,7 +55,9 @@ const seasonOptions = payload.seasons?.map((s, idx) => ({
 })) ?? [];
 
 export default function MahjongDashboard() {
-  const [seasonIndex, setSeasonIndex] = useState(0);
+  const [seasonIndex, setSeasonIndex] = useState(() =>
+    resolveLatestSeasonIndex(payload.seasons),
+  );
 
   const season: Season | undefined = payload.seasons?.[seasonIndex];
   const seasonSummary = season?.summary;
