@@ -5,7 +5,8 @@ import { HeaderBar } from "@/components/header";
 import { Leaderboard } from "@/components/leaderboard";
 import { MatchHistoryTable } from "@/components/matchhistorytable";
 import { PlayerSummaryPanel } from "@/components/playersummarypanel";
-import { ScoreTimelineChart } from "@/components/scoretimelinechart";
+import { SeasonHero } from "@/components/seasonhero";
+import { SeasonRankings } from "@/components/seasonrankings";
 import { buildHeadToHeadRecords } from "@/data/head-to-head";
 import { buildMatchHistory } from "@/data/match-history";
 import { buildPlayerSummaries } from "@/data/player-summary";
@@ -49,10 +50,11 @@ function formatGeneratedAt(iso?: string): string {
   });
 }
 
-const seasonOptions = payload.seasons?.map((s, idx) => ({
-  label: s.summary?.season ?? `Season ${idx + 1}`,
-  value: idx,
-})) ?? [];
+const seasonOptions =
+  payload.seasons?.map((season, index) => ({
+    label: season.summary?.season ?? `シーズン ${index + 1}`,
+    value: index,
+  })) ?? [];
 
 export default function MahjongDashboard() {
   const [seasonIndex, setSeasonIndex] = useState(() =>
@@ -68,18 +70,11 @@ export default function MahjongDashboard() {
   const matchHistory = useMemo(() => buildMatchHistory(season), [season]);
   const headToHeadRecords = useMemo(() => buildHeadToHeadRecords(season), [season]);
 
-  const sortedPlayers = [...playerSummaries].sort((a, b) => b.totalScore - a.totalScore);
-  const hasPlayers = sortedPlayers.length > 0;
-  const leader = hasPlayers ? sortedPlayers[0] : null;
-  const mostGames = hasPlayers
-    ? sortedPlayers.reduce((best, player) => (player.gamesPlayed > best.gamesPlayed ? player : best))
-    : null;
-  const bestWinRate = hasPlayers
-    ? sortedPlayers.reduce((best, player) => ((player.winRate ?? 0) > (best?.winRate ?? 0) ? player : best))
-    : null;
-
   return (
-    <div className="min-h-screen w-full bg-[var(--color-bg)] text-[var(--color-text)]">
+    <div className="relative min-h-screen overflow-hidden bg-[var(--color-bg)] text-[var(--color-text)]">
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[520px] bg-[radial-gradient(circle_at_20%_0%,rgba(16,163,127,0.14),transparent_34%),radial-gradient(circle_at_85%_15%,rgba(214,193,154,0.18),transparent_28%)]" />
+      <div className="pointer-events-none absolute inset-x-0 top-[380px] h-[640px] bg-[linear-gradient(180deg,transparent,rgba(255,255,255,0.35),transparent)]" />
+
       <HeaderBar
         totalgames={seasonSummary?.total_games ?? 0}
         totalplayers={seasonSummary?.total_players ?? 0}
@@ -87,77 +82,46 @@ export default function MahjongDashboard() {
         date_end={seasonSummary?.end_date ?? "-"}
         generated_at={generatedAt}
         seasonLabel={seasonSummary?.season ?? "-"}
-        seasonOptions={seasonOptions.map((opt) => opt.label)}
+        seasonOptions={seasonOptions.map((option) => option.label)}
         selectedSeasonIndex={seasonIndex}
         onSelectSeason={setSeasonIndex}
       />
-      <main className="mx-auto max-w-6xl space-y-14 px-6 py-12">
-        <section id="overview" className="space-y-6">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-              <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">leader</p>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">総合トップ</p>
-                  <p className="text-2xl font-semibold text-[var(--color-text)]">{leader?.name ?? "-"}</p>
-                </div>
-                <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
-                  {leader?.totalScore.toFixed(1)} pt
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">累計ポイントが最も高いプレイヤー</p>
-            </div>
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-              <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">endurance</p>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">最多対局</p>
-                  <p className="text-2xl font-semibold text-[var(--color-text)]">{mostGames?.name ?? "-"}</p>
-                </div>
-                <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
-                  {mostGames?.gamesPlayed ?? 0} 局
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">最も多く対局したプレイヤー</p>
-            </div>
-            <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-5">
-              <p className="text-[11px] uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">momentum</p>
-              <div className="mt-3 flex items-center justify-between">
-                <div>
-                  <p className="text-sm text-[var(--color-text-subtle)]">最高トップ率</p>
-                  <p className="text-2xl font-semibold text-[var(--color-text)]">{bestWinRate?.name ?? "-"}</p>
-                </div>
-                <span className="rounded-full border border-[var(--color-border-strong)] px-3 py-1 text-xs font-semibold text-[var(--color-text)]">
-                  {((bestWinRate?.winRate ?? 0) * 100).toFixed(1)}%
-                </span>
-              </div>
-              <p className="mt-2 text-xs text-[var(--color-text-subtle)]">トップ率が最も高いプレイヤー</p>
-            </div>
-          </div>
+
+      <main className="relative mx-auto flex max-w-[1400px] flex-col gap-8 px-4 pb-20 pt-6 md:px-6 md:pb-24 md:pt-8">
+        <section className="order-1">
+          <SeasonHero
+            seasonLabel={seasonSummary?.season ?? "麻雀シーズン"}
+            totalGames={seasonSummary?.total_games ?? 0}
+            timeline={timeline}
+            players={players}
+          />
         </section>
 
-        <section id="trend" className="space-y-6">
-          <ScoreTimelineChart players={players} timeline={timeline} />
-        </section>
-
-        <section id="leaderboard" className="space-y-6">
-          <Leaderboard players={playerSummaries} />
-        </section>
-
-        <section id="head-to-head" className="space-y-6">
-          <HeadToHeadTable records={headToHeadRecords} />
-        </section>
-
-        <section id="players" className="space-y-6">
+        <section id="players" className="order-2 min-w-0 xl:order-4">
           <PlayerSummaryPanel players={playerSummaries} />
         </section>
 
-        <section id="history" className="space-y-6">
+        <div className="order-3 grid gap-6 xl:order-3 xl:grid-cols-[1.2fr_0.92fr]">
+          <section id="leaderboard" className="min-w-0">
+            <Leaderboard players={playerSummaries} />
+          </section>
+
+          <section id="head-to-head" className="min-w-0">
+            <HeadToHeadTable records={headToHeadRecords} />
+          </section>
+        </div>
+
+        <section className="order-4 xl:order-2">
+          <SeasonRankings players={playerSummaries} />
+        </section>
+
+        <section id="history" className="order-5 min-w-0">
           <MatchHistoryTable matches={matchHistory} />
         </section>
       </main>
-      <footer className="mx-auto max-w-6xl px-6 pb-10 text-xs text-[var(--color-text-subtle)]">
-        データはExcel/CSVから生成したJSONをもとに表示しています。
+
+      <footer className="relative mx-auto max-w-[1400px] px-4 pb-10 text-sm text-[var(--color-text-subtle)] md:px-6">
+        データ生成: workbook の集計結果を JSON に変換し、このダッシュボードに表示しています。
       </footer>
     </div>
   );

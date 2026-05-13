@@ -1,6 +1,12 @@
 import { ID_COLOR, NAME_TO_ID, PLAYER_ORDER } from "@/lib/player-mappings";
 import type { PlayerId, Season } from "@/types/propsType";
 
+type BestScoreGame = {
+  date: string;
+  gameNumber: number;
+  dailyIndex: number;
+};
+
 export type PlayerSummaryDetail = {
   id: PlayerId;
   name: string;
@@ -14,9 +20,14 @@ export type PlayerSummaryDetail = {
   topRate: number;
   lastRate: number;
   bestScore: number;
+  bestScoreGame?: BestScoreGame;
   worstScore: number;
   rankCounts: { first: number; second: number; third: number; fourth: number };
   rankHistory: Array<{ gameNumber: number; date: string; dailyIndex: number; rank: number | null }>;
+};
+
+type BestScoreSnapshot = BestScoreGame & {
+  score: number;
 };
 
 export function buildPlayerSummaries(season: Season | undefined): PlayerSummaryDetail[] {
@@ -31,6 +42,7 @@ export function buildPlayerSummaries(season: Season | undefined): PlayerSummaryD
     YOSHITANI: [],
     HINATA: [],
   };
+  const bestScoreById: Partial<Record<PlayerId, BestScoreSnapshot>> = {};
 
   const trackedPlayers = season.players
     .map((player) => {
@@ -42,25 +54,46 @@ export function buildPlayerSummaries(season: Season | undefined): PlayerSummaryD
 
   season.history?.forEach((game, index) => {
     const date = game.date ?? "";
-    const nth = (perDateCount.get(date) ?? 0) + 1;
-    perDateCount.set(date, nth);
+    const dailyIndex = (perDateCount.get(date) ?? 0) + 1;
+    perDateCount.set(date, dailyIndex);
 
     const gameNumber = index + 1;
-    const participants = new Map<string, number>();
-    for (const participant of game.players ?? []) {
-      if (typeof participant.name === "string" && typeof participant.rank === "number") {
-        participants.set(participant.name, participant.rank);
+    const participants = new Map<
+      string,
+      {
+        rank: number | null;
+        score: number | null;
       }
+    >();
+
+    for (const participant of game.players ?? []) {
+      participants.set(participant.name, {
+        rank: typeof participant.rank === "number" ? participant.rank : null,
+        score: typeof participant.score === "number" ? participant.score : null,
+      });
     }
 
     for (const { id, player } of trackedPlayers) {
-      const rank = participants.get(player.name);
+      const participant = participants.get(player.name);
+
       rankTimeline[id].push({
         gameNumber,
         date,
-        dailyIndex: nth,
-        rank: typeof rank === "number" ? rank : null,
+        dailyIndex,
+        rank: participant?.rank ?? null,
       });
+
+      if (typeof participant?.score === "number") {
+        const currentBest = bestScoreById[id];
+        if (!currentBest || participant.score > currentBest.score) {
+          bestScoreById[id] = {
+            score: participant.score,
+            date,
+            gameNumber,
+            dailyIndex,
+          };
+        }
+      }
     }
   });
 
@@ -81,6 +114,13 @@ export function buildPlayerSummaries(season: Season | undefined): PlayerSummaryD
     topRate: player.top_rate,
     lastRate: player.last_rate,
     bestScore: player.best_score,
+    bestScoreGame: bestScoreById[id]
+      ? {
+          date: bestScoreById[id].date,
+          gameNumber: bestScoreById[id].gameNumber,
+          dailyIndex: bestScoreById[id].dailyIndex,
+        }
+      : undefined,
     worstScore: player.worst_score,
     rankCounts: player.rank_counts,
     rankHistory: rankTimeline[id],

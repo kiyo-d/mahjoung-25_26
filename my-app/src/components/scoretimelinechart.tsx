@@ -1,41 +1,62 @@
 import { useMemo } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
-  LineChart,
+  CartesianGrid,
   Line,
+  LineChart,
+  ReferenceLine,
+  ResponsiveContainer,
+  Tooltip,
   XAxis,
   YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
   type TooltipProps,
 } from "recharts";
-import type { TimelinePoint, Player } from "@/types/propsType";
 import type { Payload } from "recharts/types/component/DefaultTooltipContent";
+
+import type { Player, TimelinePoint } from "@/types/propsType";
 
 type ChartTooltipProps = TooltipProps<number, string> & {
   payload?: Payload<number, string>[];
 };
 
-const formatScore = (value: number): string =>
-  value.toLocaleString("ja-JP", { minimumFractionDigits: 0, maximumFractionDigits: 1 });
+const scoreFormat = new Intl.NumberFormat("ja-JP", {
+  minimumFractionDigits: 1,
+  maximumFractionDigits: 1,
+});
 
-const formatDelta = (value: number): string => {
-  const rounded = Math.round(value * 10) / 10;
-  const formatted = Math.abs(rounded).toLocaleString("ja-JP", {
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  });
-  if (rounded > 0) return `+${formatted}`;
-  if (rounded < 0) return `-${formatted}`;
-  return `±${formatted}`;
-};
+function formatScore(value: number): string {
+  return scoreFormat.format(value);
+}
 
-export function ScoreTimelineChart({ timeline, players }:{
-  timeline: TimelinePoint[]; players: Player[];
+function formatDelta(value: number): string {
+  if (!Number.isFinite(value)) return "-";
+  if (Math.abs(value) < 1e-9) return "変化なし";
+  return `${value > 0 ? "+" : ""}${scoreFormat.format(value)}`;
+}
+
+function withAlpha(hex: string, alpha: number): string {
+  const normalized = hex.replace("#", "");
+  const bigint = Number.parseInt(normalized, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
+function formatShortDate(value: string): string {
+  const parsed = new Date(value);
+  if (Number.isNaN(parsed.getTime())) return value || "-";
+  return parsed.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+}
+
+export function ScoreTimelineChart({
+  timeline,
+  players,
+}: {
+  timeline: TimelinePoint[];
+  players: Player[];
 }) {
   const playerMap = useMemo<Record<string, Player>>(
-    () => Object.fromEntries(players.map((p) => [p.id, p])),
+    () => Object.fromEntries(players.map((player) => [player.id, player])),
     [players],
   );
 
@@ -46,13 +67,13 @@ export function ScoreTimelineChart({ timeline, players }:{
 
     let min = Number.POSITIVE_INFINITY;
     let max = Number.NEGATIVE_INFINITY;
+
     for (const point of timeline) {
       for (const player of players) {
         const value = point[player.id];
-        if (typeof value === "number") {
-          if (value < min) min = value;
-          if (value > max) max = value;
-        }
+        if (typeof value !== "number") continue;
+        if (value < min) min = value;
+        if (value > max) max = value;
       }
     }
 
@@ -69,6 +90,7 @@ export function ScoreTimelineChart({ timeline, players }:{
       const exponent = Math.floor(Math.log10(value));
       const fraction = value / 10 ** exponent;
       let niceFraction: number;
+
       if (round) {
         if (fraction < 1.5) niceFraction = 1;
         else if (fraction < 3) niceFraction = 2;
@@ -78,25 +100,23 @@ export function ScoreTimelineChart({ timeline, players }:{
       else if (fraction <= 2) niceFraction = 2;
       else if (fraction <= 5) niceFraction = 5;
       else niceFraction = 10;
+
       return niceFraction * 10 ** exponent;
     };
 
     const desiredTickCount = 6;
     const niceRange = niceNumber(rangeForStep, false);
     const step = niceNumber(niceRange / (desiredTickCount - 1), true);
+
     const roundAxisValue = (value: number) => {
       if (Math.abs(value) < 1e-9) return 0;
       return Math.round(value * 10) / 10;
     };
 
     let lower =
-      rawRange === 0
-        ? minWithZero - step
-        : Math.floor(minWithZero / step) * step;
+      rawRange === 0 ? minWithZero - step : Math.floor(minWithZero / step) * step;
     let upper =
-      rawRange === 0
-        ? maxWithZero + step
-        : Math.ceil(maxWithZero / step) * step;
+      rawRange === 0 ? maxWithZero + step : Math.ceil(maxWithZero / step) * step;
 
     if (lower === upper) {
       lower -= step;
@@ -108,7 +128,10 @@ export function ScoreTimelineChart({ timeline, players }:{
       ticks.push(roundAxisValue(tick));
     }
 
-    return { domain: [roundAxisValue(lower), roundAxisValue(upper)] as [number, number], ticks };
+    return {
+      domain: [roundAxisValue(lower), roundAxisValue(upper)] as [number, number],
+      ticks,
+    };
   }, [players, timeline]);
 
   const xDomain = useMemo(() => {
@@ -124,9 +147,7 @@ export function ScoreTimelineChart({ timeline, players }:{
     for (let tick = 10; tick <= lastGame; tick += 10) {
       ticks.add(tick);
     }
-    if (lastGame !== 1) {
-      ticks.add(lastGame);
-    }
+    ticks.add(lastGame);
     return Array.from(ticks).sort((a, b) => a - b);
   }, [timeline]);
 
@@ -162,147 +183,118 @@ export function ScoreTimelineChart({ timeline, players }:{
       const ranks: Record<string, number> = {};
       let currentRank = 1;
       let lastScore: number | null = null;
+
       sorted.forEach((id, sortIndex) => {
         const score = scores[id] ?? Number.NEGATIVE_INFINITY;
-        if (lastScore !== null && score < (lastScore ?? 0) - 1e-6) {
+        if (lastScore !== null && score < lastScore - 1e-6) {
           currentRank = sortIndex + 1;
         }
         ranks[id] = currentRank;
         lastScore = score;
       });
+
       rankHistory.push(ranks);
     });
 
-    return { scoreHistory, rankHistory, gameIndexByNumber };
+    return { gameIndexByNumber, rankHistory, scoreHistory };
   }, [players, timeline]);
 
   const lastPoint = timeline[timeline.length - 1];
-  const lastGameNumber = lastPoint?.gameNumber ?? 0;
-  const lastGameDate = lastPoint?.date ?? "-";
-  const scoreboard = useMemo(() => {
-    if (!lastPoint) return [] as { id: string; score: number }[];
-    return players
-      .map((player) => ({ id: player.id, score: Number(lastPoint[player.id] ?? 0) }))
-      .sort((a, b) => b.score - a.score);
-  }, [lastPoint, players]);
-  const leadMargin = scoreboard.length >= 2 ? scoreboard[0].score - scoreboard[1].score : 0;
-  const leaderName = scoreboard.length > 0 ? players.find((p) => p.id === scoreboard[0].id)?.name ?? "-" : "-";
-  const topTrend = useMemo(() => {
-    if (scoreboard.length === 0 || derivedStats.scoreHistory.length < 2) return 0;
-    const latest = derivedStats.scoreHistory.at(-1) ?? {};
-    const prev = derivedStats.scoreHistory.at(-2) ?? {};
-    return Number(latest[scoreboard[0].id] ?? 0) - Number(prev[scoreboard[0].id] ?? 0);
-  }, [derivedStats.scoreHistory, scoreboard]);
 
-  const renderTooltip = (tooltipProps: ChartTooltipProps) => {
-    const { active, payload } = tooltipProps;
-    if (!active || !payload || payload.length === 0) return null;
+  const scoreboard = useMemo(() => {
+    if (!lastPoint) return [] as Array<{ id: string; score: number; rank: number }>;
+
+    const currentRanks = derivedStats.rankHistory.at(-1) ?? {};
+
+    return players
+      .map((player) => ({
+        id: player.id,
+        score: Number(lastPoint[player.id] ?? 0),
+        rank: currentRanks[player.id] ?? 0,
+      }))
+      .sort((a, b) => b.score - a.score);
+  }, [derivedStats.rankHistory, lastPoint, players]);
+
+  const leader = scoreboard[0];
+  const runnerUp = scoreboard[1];
+  const leadMargin = leader && runnerUp ? leader.score - runnerUp.score : 0;
+  const latestDate = lastPoint ? formatShortDate(lastPoint.date) : "-";
+  const latestHand = lastPoint ? `第${lastPoint.gameNumber}戦` : "-";
+  const topTrend = useMemo(() => {
+    if (!leader || derivedStats.scoreHistory.length < 2) return 0;
+    const latestScores = derivedStats.scoreHistory.at(-1) ?? {};
+    const previousScores = derivedStats.scoreHistory.at(-2) ?? {};
+    return Number(latestScores[leader.id] ?? 0) - Number(previousScores[leader.id] ?? 0);
+  }, [derivedStats.scoreHistory, leader]);
+
+  const renderTooltip = ({ active, payload }: ChartTooltipProps) => {
+    if (!active || !payload?.length) return null;
+
     const point = payload[0]?.payload as TimelinePoint | undefined;
     if (!point) return null;
 
-     const pointIndex = derivedStats.gameIndexByNumber.get(point.gameNumber) ?? -1;
-     const previousScores = pointIndex > 0 ? derivedStats.scoreHistory[pointIndex - 1] : undefined;
-     const previousRanks = pointIndex > 0 ? derivedStats.rankHistory[pointIndex - 1] : undefined;
-     const currentRanks = pointIndex >= 0 ? derivedStats.rankHistory[pointIndex] : undefined;
-
-    const eventDate = new Date(point.date);
-    const formattedDate = Number.isNaN(eventDate.getTime())
-      ? point.date
-      : eventDate.toLocaleDateString("ja-JP", { month: "short", day: "numeric" });
+    const pointIndex = derivedStats.gameIndexByNumber.get(point.gameNumber) ?? -1;
+    const previousScores = pointIndex > 0 ? derivedStats.scoreHistory[pointIndex - 1] : undefined;
+    const previousRanks = pointIndex > 0 ? derivedStats.rankHistory[pointIndex - 1] : undefined;
+    const currentRanks = pointIndex >= 0 ? derivedStats.rankHistory[pointIndex] : undefined;
 
     return (
-      <div className="min-w-[220px] rounded-lg border border-[var(--color-border)] bg-[var(--color-surface)] p-3 shadow-[var(--shadow-subtle)]">
-        <div className="text-xs uppercase tracking-wide text-[var(--color-text-subtle)]">通算 {point.gameNumber} 戦目</div>
-        <div className="text-sm font-medium text-[var(--color-text)]">{formattedDate}（{point.hand}）</div>
-        <div className="text-xs text-[var(--color-text-subtle)]">この日 {point.dailyIndex} 戦目</div>
-        <div className="mt-2 space-y-1">
+      <div className="min-w-[250px] rounded-[24px] border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.94)] p-4 shadow-[var(--shadow-floating)] backdrop-blur-xl">
+        <div className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">
+          {`第${point.gameNumber}戦・${formatShortDate(point.date)}`}
+        </div>
+        <div className="mt-2 text-sm text-[var(--color-text-muted)]">
+          当日 {point.dailyIndex} 戦目
+        </div>
+
+        <div className="mt-4 space-y-2">
           {[...payload]
             .sort((a, b) => {
-              const valueA =
-                typeof a.value === "number"
-                  ? a.value
-                  : typeof a.value === "string"
-                    ? Number.parseFloat(a.value)
-                    : Number.NEGATIVE_INFINITY;
-              const valueB =
-                typeof b.value === "number"
-                  ? b.value
-                  : typeof b.value === "string"
-                    ? Number.parseFloat(b.value)
-                    : Number.NEGATIVE_INFINITY;
-              if (Number.isNaN(valueA) && Number.isNaN(valueB)) return 0;
-              if (Number.isNaN(valueA)) return 1;
-              if (Number.isNaN(valueB)) return -1;
+              const valueA = typeof a.value === "number" ? a.value : Number(a.value ?? Number.NEGATIVE_INFINITY);
+              const valueB = typeof b.value === "number" ? b.value : Number(b.value ?? Number.NEGATIVE_INFINITY);
               return valueB - valueA;
             })
             .map((entry) => {
-            const dataKey = entry.dataKey as string;
-            const playerId = dataKey as keyof typeof playerMap;
-            const player = playerMap[playerId];
-            const rawValue =
-              typeof entry.value === "number"
-                ? entry.value
-                : typeof entry.value === "string"
-                  ? Number.parseFloat(entry.value)
-                  : Number.NaN;
-            const previousValue = previousScores?.[dataKey];
-            const scoreDelta =
-              Number.isFinite(rawValue) && typeof previousValue === "number"
-                ? rawValue - previousValue
-                : undefined;
-            const hasPreviousValue = typeof previousValue === "number";
-            const hasSignificantDelta =
-              typeof scoreDelta === "number" && Math.abs(scoreDelta) > 1e-6;
-            const shouldShowDeltaRow = hasSignificantDelta || !hasPreviousValue;
-            const rankNow = currentRanks?.[dataKey];
-            const rankPrev = previousRanks?.[dataKey];
-            const rankDiff =
-              typeof rankNow === "number" && typeof rankPrev === "number"
-                ? rankPrev - rankNow
-                : 0;
+              const playerId = entry.dataKey as string;
+              const player = playerMap[playerId];
+              const score = typeof entry.value === "number" ? entry.value : Number(entry.value ?? 0);
+              const previousScore = previousScores?.[playerId];
+              const scoreDelta =
+                typeof previousScore === "number" ? score - previousScore : Number.NaN;
+              const rankNow = currentRanks?.[playerId];
+              const rankPrev = previousRanks?.[playerId];
+              const rankDelta =
+                typeof rankNow === "number" && typeof rankPrev === "number" ? rankPrev - rankNow : 0;
 
-            const scoreChangeClass = hasSignificantDelta
-              ? scoreDelta! > 0
-                ? "text-emerald-600"
-                : "text-rose-600"
-              : "text-[var(--color-text-subtle)]";
+              return (
+                <div
+                  key={playerId}
+                  className="flex items-start justify-between gap-4 rounded-2xl border border-[var(--color-border-soft)] bg-white/80 px-3 py-2"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-2 text-sm font-medium text-[var(--color-text)]">
+                      <span
+                        className="h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: player?.color ?? "#111111" }}
+                      />
+                      <span className="truncate">{player?.name ?? playerId}</span>
+                    </div>
+                    <div className="mt-1 text-xs text-[var(--color-text-subtle)]">
+                      {typeof rankNow === "number" ? `${rankNow}位` : "順位なし"}
+                    </div>
+                  </div>
 
-            const rankChangeClass =
-              rankDiff !== 0
-                ? rankDiff > 0
-                  ? "text-emerald-600"
-                  : "text-rose-600"
-                : "text-[var(--color-text-subtle)]";
-            return (
-              <div key={dataKey} className="flex items-start justify-between gap-3 text-sm">
-                <span className="flex items-center gap-2 text-[var(--color-text)]">
-                  <span
-                    className="h-2.5 w-2.5 rounded-full"
-                    style={{ backgroundColor: entry.color ?? player?.color ?? "#fff" }}
-                  />
-                  <span>{player?.name ?? dataKey}</span>
-                </span>
-                <span className="flex flex-col items-end gap-0.5 text-right">
-                  <span className="font-medium text-[var(--color-text)] tabular-nums">
-                    {typeof entry.value === "number"
-                      ? formatScore(entry.value)
-                      : "-"}
-                  </span>
-                  {shouldShowDeltaRow ? (
-                    <span className={`flex items-center gap-1 text-xs ${scoreChangeClass}`}>
-                      {hasSignificantDelta ? (scoreDelta! > 0 ? "↑" : "↓") : null}
-                      <span>{hasSignificantDelta ? formatDelta(scoreDelta!) : "前戦なし"}</span>
-                    </span>
-                  ) : null}
-                  {rankDiff !== 0 && typeof rankNow === "number" ? (
-                    <span className={`flex items-center gap-1 text-xs ${rankChangeClass}`}>
-                      {rankDiff > 0 ? "↑" : "↓"}
-                      {`${Math.abs(rankDiff)} rank`}
-                    </span>
-                  ) : null}
-                </span>
-              </div>
-            );
+                  <div className="text-right">
+                    <div className="font-mono text-sm font-medium text-[var(--color-text)]">
+                      {formatScore(score)}
+                    </div>
+                    <div className="mt-1 text-xs text-[var(--color-text-subtle)]">
+                      {Number.isFinite(scoreDelta) ? formatDelta(scoreDelta) : "初回"}
+                      {rankDelta !== 0 ? `・順位 ${rankDelta > 0 ? "+" : ""}${rankDelta}` : ""}
+                    </div>
+                  </div>
+                </div>
+              );
             })}
         </div>
       </div>
@@ -310,100 +302,167 @@ export function ScoreTimelineChart({ timeline, players }:{
   };
 
   return (
-    <Card className="relative overflow-hidden">
-      <CardHeader className="relative z-10 pb-4">
-        <div className="flex flex-wrap items-start justify-between gap-3">
-          <div>
-            <CardTitle className="flex items-center gap-3 text-2xl font-semibold text-[var(--color-text)]">
-              シーズンスコア推移
-              <span className="rounded-full border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2.5 py-0.5 text-[11px] font-semibold uppercase tracking-[0.32em] text-[var(--color-text-subtle)]">
-                trend
+    <div className="relative overflow-hidden rounded-[32px] border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.72)] p-5 shadow-[var(--shadow-floating)] backdrop-blur-2xl md:p-6">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.28),transparent_38%),linear-gradient(180deg,rgba(255,255,255,0.16),transparent)]" />
+
+      <div className="relative space-y-5">
+        <div className="flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
+          <div className="max-w-[34rem]">
+            <p className="text-[11px] uppercase tracking-[0.34em] text-[var(--color-text-subtle)]">
+              スコア推移
+            </p>
+            <h2 className="mt-2 font-[var(--font-display)] text-3xl font-semibold tracking-tight text-[var(--color-text)] md:text-4xl">
+              シーズン全体の流れを一画面で。
+            </h2>
+            <p className="mt-3 text-sm leading-7 text-[var(--color-text-muted)]">
+              各対局ごとのスコア変化、順位の入れ替わり、直近の流れをグラフ上で追えます。
+            </p>
+          </div>
+
+          <div className="hidden flex-wrap gap-2 md:flex">
+            {scoreboard.map((entry) => {
+              const player = playerMap[entry.id];
+              return (
+                <div
+                  key={entry.id}
+                  className="rounded-full border px-3 py-2 text-sm shadow-[var(--shadow-subtle)]"
+                  style={{
+                    borderColor: withAlpha(player?.color ?? "#111111", 0.22),
+                    background: `linear-gradient(135deg, ${withAlpha(player?.color ?? "#111111", 0.14)}, rgba(255,255,255,0.9))`,
+                  }}
+                >
+                  <div className="flex items-center gap-2">
+                    <span
+                      className="h-2.5 w-2.5 rounded-full"
+                      style={{ backgroundColor: player?.color ?? "#111111" }}
+                    />
+                    <span className="font-medium text-[var(--color-text)]">
+                      {entry.rank}位 {player?.name ?? entry.id}
+                    </span>
+                    <span className="font-mono text-[var(--color-text-subtle)]">
+                      {formatScore(entry.score)}
+                    </span>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-3 gap-2 md:gap-3">
+          <div className="rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface-strong)] px-3 py-3 md:rounded-[24px] md:px-4 md:py-4">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-text-subtle)] md:text-[11px] md:tracking-[0.28em]">
+              現在の首位
+            </div>
+            <div className="mt-2 flex flex-col gap-1 md:mt-3 md:flex-row md:items-baseline md:justify-between md:gap-4">
+              <span className="text-sm font-semibold leading-tight text-[var(--color-text)] md:text-lg">
+                {leader ? playerMap[leader.id]?.name ?? leader.id : "-"}
               </span>
-            </CardTitle>
-            <p className="mt-1 text-sm text-[var(--color-text-subtle)]">累計スコアの波と差分を重ねて可視化</p>
-          </div>
-          <div className="flex items-center gap-3 text-xs text-[var(--color-text-subtle)]">
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-500" />
-              <span>累計ライン</span>
-            </div>
-            <div className="inline-flex items-center gap-2 rounded-full border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-1.5">
-              <span className="h-2 w-2 rounded-full bg-sky-500" />
-              <span>ゲーム番号</span>
+              <span className="font-mono text-xs text-[var(--color-text-subtle)] md:text-sm">
+                {leader ? formatScore(leader.score) : "-"}
+              </span>
             </div>
           </div>
-        </div>
-        <div className="mt-4 grid gap-3 sm:grid-cols-3">
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">leader</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
-              <span className="font-semibold">{leaderName}</span>
-              <span className="font-mono text-[var(--color-text)]">{formatScore(scoreboard[0]?.score ?? 0)} pt</span>
+
+          <div className="rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface-strong)] px-3 py-3 md:rounded-[24px] md:px-4 md:py-4">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-text-subtle)] md:text-[11px] md:tracking-[0.28em]">
+              首位差
             </div>
-            <p className="text-[11px] text-[var(--color-text-subtle)]">首位と2位の差 {formatDelta(leadMargin)}</p>
+            <div className="mt-2 flex flex-col gap-1 md:mt-3 md:flex-row md:items-baseline md:justify-between md:gap-4">
+              <span className="font-[var(--font-display)] text-2xl font-semibold tracking-tight text-[var(--color-text)] md:text-3xl">
+                {formatScore(Math.max(leadMargin, 0))}
+              </span>
+              <span className="text-xs text-[var(--color-text-subtle)] md:text-sm">pt</span>
+            </div>
           </div>
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">latest</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
-              <span className="font-semibold">{lastGameNumber} 戦目</span>
-              <span className="font-mono text-[var(--color-text)]">{lastGameDate}</span>
+
+          <div className="rounded-[22px] border border-[var(--color-border)] bg-[var(--color-surface-strong)] px-3 py-3 md:rounded-[24px] md:px-4 md:py-4">
+            <div className="text-[10px] uppercase tracking-[0.22em] text-[var(--color-text-subtle)] md:text-[11px] md:tracking-[0.28em]">
+              直近の変動
             </div>
-            <p className="text-[11px] text-[var(--color-text-subtle)]">更新日付とゲーム通算番号</p>
-          </div>
-          <div className="rounded-xl border border-[var(--color-border)] bg-[var(--color-surface)] px-3 py-2">
-            <p className="text-[11px] uppercase tracking-[0.28em] text-[var(--color-text-subtle)]">momentum</p>
-            <div className="mt-1 flex items-center justify-between text-sm text-[var(--color-text)]">
-              <span className="font-semibold">直近増減</span>
-              <span className="font-mono text-[var(--color-text)]">{formatDelta(topTrend)}</span>
+            <div className="mt-2 flex flex-col gap-1 md:mt-3 md:flex-row md:items-baseline md:justify-between md:gap-4">
+              <span className="text-sm font-semibold leading-tight text-[var(--color-text)] md:text-lg">
+                {latestHand}
+              </span>
+              <span className="font-mono text-xs text-[var(--color-text-subtle)] md:text-sm">
+                {formatDelta(topTrend)}
+              </span>
             </div>
-            <p className="text-[11px] text-[var(--color-text-subtle)]">前ゲームからのスコア差分</p>
+            <div className="mt-1 text-[11px] text-[var(--color-text-subtle)] md:text-xs">{latestDate}</div>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="relative z-10 pt-0">
-        <div className="rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] p-4">
-          <div className="mt-2 h-[380px] w-full rounded-xl bg-[var(--color-surface)]">
-            <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={timeline} margin={{ left: 20, right: 10, top: 16, bottom: 16 }}>
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                <XAxis
-                  dataKey="gameNumber"
-                  ticks={xTicks}
-                  domain={xDomain}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
-                  axisLine={{ stroke: "#d1d5db" }}
-                  tickLine={{ stroke: "#d1d5db" }}
-                  height={42}
-                  label={{ value: "ゲーム", position: "insideBottom", offset: -8, fill: "#6b7280", fontSize: 12 }}
-                />
-                <YAxis
-                  domain={yScale.domain}
-                  ticks={yScale.ticks}
-                  tickFormatter={formatScore}
-                  tick={{ fill: "#6b7280", fontSize: 12 }}
-                  axisLine={{ stroke: "#d1d5db" }}
-                  tickLine={{ stroke: "#d1d5db" }}
-                  width={68}
-                  label={{ value: "スコア", angle: -90, position: "insideLeft", offset: 14, fill: "#6b7280", fontSize: 12 }}
-                />
-                <Tooltip content={renderTooltip} cursor={{ stroke: "#9ca3af", strokeDasharray: "4 4" }} />
+
+        <div className="h-[320px] rounded-[28px] border border-[var(--color-border)] bg-[color:rgba(255,255,255,0.68)] p-3 sm:h-[360px] md:h-[420px] md:p-5">
+          <ResponsiveContainer width="100%" height="100%">
+            <LineChart data={timeline} margin={{ left: 4, right: 14, top: 14, bottom: 8 }}>
+              <defs>
                 {players.map((player) => (
-                  <Line
-                    key={player.id}
-                    type="monotone"
-                    dataKey={player.id}
-                    name={player.name}
-                    stroke={player.color}
-                    strokeWidth={2.6}
-                    dot={false}
-                    activeDot={{ r: 4, fill: player.color }}
-                  />
+                  <linearGradient
+                    key={`gradient-${player.id}`}
+                    id={`score-line-${player.id}`}
+                    x1="0"
+                    y1="0"
+                    x2="1"
+                    y2="0"
+                  >
+                    <stop offset="0%" stopColor={withAlpha(player.color, 0.55)} />
+                    <stop offset="100%" stopColor={player.color} />
+                  </linearGradient>
                 ))}
-              </LineChart>
-            </ResponsiveContainer>
-          </div>
+              </defs>
+
+              <CartesianGrid
+                vertical={false}
+                stroke="rgba(18,17,15,0.08)"
+                strokeDasharray="3 8"
+              />
+              <ReferenceLine
+                y={0}
+                stroke="rgba(18,17,15,0.18)"
+                strokeDasharray="4 6"
+              />
+
+              <XAxis
+                dataKey="gameNumber"
+                ticks={xTicks}
+                domain={xDomain}
+                tick={{ fill: "var(--color-text-subtle)", fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                minTickGap={24}
+              />
+              <YAxis
+                domain={yScale.domain}
+                ticks={yScale.ticks}
+                tickFormatter={(value) => formatScore(value)}
+                tick={{ fill: "var(--color-text-subtle)", fontSize: 12 }}
+                axisLine={false}
+                tickLine={false}
+                width={56}
+              />
+              <Tooltip
+                cursor={{ stroke: "rgba(18,17,15,0.18)", strokeDasharray: "4 6" }}
+                content={renderTooltip}
+                wrapperStyle={{ outline: "none" }}
+              />
+
+              {players.map((player) => (
+                <Line
+                  key={player.id}
+                  type="monotone"
+                  dataKey={player.id}
+                  name={player.name}
+                  stroke={`url(#score-line-${player.id})`}
+                  strokeWidth={leader?.id === player.id ? 3.8 : 2.6}
+                  opacity={leader?.id === player.id ? 1 : 0.9}
+                  dot={false}
+                  activeDot={{ r: 5, fill: player.color, stroke: "#ffffff", strokeWidth: 1.5 }}
+                />
+              ))}
+            </LineChart>
+          </ResponsiveContainer>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }
